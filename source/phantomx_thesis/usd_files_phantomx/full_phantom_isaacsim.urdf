@@ -1,0 +1,873 @@
+<?xml version="1.0"?>
+<!--
+  PhantomX Hexapod - Fully Expanded URDF
+  Generated from xacro sources for Isaac Sim import.
+
+  MESH PATHS: Meshes are referenced as relative paths (./meshes/*.STL).
+  Place this URDF file one level above a "meshes/" folder containing:
+    body.STL, body_coll.STL,
+    connect.STL, connect_coll.STL,
+    thigh_l.STL, thigh_l_coll.STL,
+    tibia_l.STL, tibia_l_coll.STL
+
+  In Isaac Sim URDF Importer: enable "Parse Mesh" and set the asset root
+  to the folder containing this file so relative mesh paths resolve correctly.
+
+  xacro properties used:
+    connect_offset  = 0.02633
+    thigh_offset_y  = -0.0645
+    thigh_offset_z  = -0.0145
+
+  Joint limits (all revolute legs):
+    effort=2.8  velocity=5.6548668  lower=-2.6179939  upper=2.6179939
+-->
+<robot name="phantom_x">
+
+  <!-- ═══════════════════════════════════════════════════════════
+       BASE LINK
+  ═══════════════════════════════════════════════════════════ -->
+  <link name="base_link">
+    <inertial>
+      <mass value="0.001"/>
+      <origin xyz="0 0 0"/>
+      <inertia ixx="0.0001" ixy="0.0" ixz="0.0"
+               iyy="0.0001" iyz="0.0" izz="0.0001"/>
+    </inertial>
+  </link>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       BODY
+  ═══════════════════════════════════════════════════════════ -->
+  <joint name="j_phantomx_attachment" type="fixed">
+    <parent link="base_link"/>
+    <child link="MP_BODY"/>
+    <origin xyz="0 0 0.1" rpy="0 0 0"/>
+  </joint>
+
+  <link name="MP_BODY">
+    <inertial>
+      <origin xyz="0 0 0"/>
+      <mass value="0.97559947"/>
+      <inertia ixx="0.002" ixy="0.0" ixz="0.0"
+               iyy="0.002" iyz="0.0" izz="0.002"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/body.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/body_coll.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+
+  <!-- ═══════════════════════════════════════════════════════════
+       LEG: RIGHT FRONT (rf)
+       Body attachment: xyz="0.1248 -0.06164 0.001116"
+                        rpy="0 4.7123 0.7853981633974483"
+  ═══════════════════════════════════════════════════════════ -->
+
+  <!-- c1_rf -->
+  <joint name="j_c1_rf" type="revolute">
+    <parent link="MP_BODY"/>
+    <child link="c1_rf"/>
+    <origin xyz="0.1248 -0.06164 0.001116" rpy="0 4.7123 0.7853981633974483"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939"/>
+  </joint>
+
+  <link name="c1_rf">
+    <inertial>
+      <origin xyz="0 -0.02633 0" rpy="0 0 0"/>
+      <mass value="0.024357719"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0"
+               iyy="0.00001" iyz="0.0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 -0.0252 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/connect.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -0.02633 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/connect_coll.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- c2_rf (fixed connector) -->
+  <joint name="j_c2_rf" type="fixed">
+    <parent link="c1_rf"/>
+    <child link="c2_rf"/>
+    <origin xyz="0 -0.054 0" rpy="0 1.5704 3.14159"/>
+  </joint>
+
+  <link name="c2_rf">
+    <inertial>
+      <origin xyz="0 -0.02633 0" rpy="0 0 0"/>
+      <mass value="0.024357719"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0"
+               iyy="0.00001" iyz="0.0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 -0.0252 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/connect.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -0.02633 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/connect_coll.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- thigh_rf -->
+  <joint name="j_thigh_rf" type="revolute">
+    <parent link="c2_rf"/>
+    <child link="thigh_rf"/>
+    <origin xyz="0 0 0" rpy="0 3.14159 3.14159"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939"/>
+  </joint>
+
+  <link name="thigh_rf">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.024357719"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0"
+               iyy="0.00001" iyz="0.0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/thigh_l.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/thigh_l_coll.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- tibia_rf -->
+  <joint name="j_tibia_rf" type="revolute">
+    <parent link="thigh_rf"/>
+    <child link="tibia_rf"/>
+    <origin xyz="0 -0.0645 -0.0145" rpy="-1.5707 0 3.14159"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939"/>
+  </joint>
+
+  <link name="tibia_rf">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.024357719"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0"
+               iyy="0.00001" iyz="0.0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/tibia_l.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/tibia_l_coll.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+
+  <!-- ═══════════════════════════════════════════════════════════
+       LEG: RIGHT MIDDLE (rm)
+       Body attachment: xyz="0 -0.1034 0.001116"
+                        rpy="0 4.7123 0"
+  ═══════════════════════════════════════════════════════════ -->
+
+  <joint name="j_c1_rm" type="revolute">
+    <parent link="MP_BODY"/>
+    <child link="c1_rm"/>
+    <origin xyz="0 -0.1034 0.001116" rpy="0 4.7123 0"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939"/>
+  </joint>
+
+  <link name="c1_rm">
+    <inertial>
+      <origin xyz="0 -0.02633 0" rpy="0 0 0"/>
+      <mass value="0.024357719"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0"
+               iyy="0.00001" iyz="0.0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 -0.0252 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/connect.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -0.02633 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/connect_coll.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="j_c2_rm" type="fixed">
+    <parent link="c1_rm"/>
+    <child link="c2_rm"/>
+    <origin xyz="0 -0.054 0" rpy="0 1.5704 3.14159"/>
+  </joint>
+
+  <link name="c2_rm">
+    <inertial>
+      <origin xyz="0 -0.02633 0" rpy="0 0 0"/>
+      <mass value="0.024357719"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0"
+               iyy="0.00001" iyz="0.0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 -0.0252 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/connect.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -0.02633 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/connect_coll.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="j_thigh_rm" type="revolute">
+    <parent link="c2_rm"/>
+    <child link="thigh_rm"/>
+    <origin xyz="0 0 0" rpy="0 3.14159 3.14159"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939"/>
+  </joint>
+
+  <link name="thigh_rm">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.024357719"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0"
+               iyy="0.00001" iyz="0.0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/thigh_l.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/thigh_l_coll.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="j_tibia_rm" type="revolute">
+    <parent link="thigh_rm"/>
+    <child link="tibia_rm"/>
+    <origin xyz="0 -0.0645 -0.0145" rpy="-1.5707 0 3.14159"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939"/>
+  </joint>
+
+  <link name="tibia_rm">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.024357719"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0"
+               iyy="0.00001" iyz="0.0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/tibia_l.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/tibia_l_coll.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+
+  <!-- ═══════════════════════════════════════════════════════════
+       LEG: RIGHT REAR (rr)
+       Body attachment: xyz="-0.1248 -0.06164 0.001116"
+                        rpy="0 4.7123 -0.7853981633974483"
+  ═══════════════════════════════════════════════════════════ -->
+
+  <joint name="j_c1_rr" type="revolute">
+    <parent link="MP_BODY"/>
+    <child link="c1_rr"/>
+    <origin xyz="-0.1248 -0.06164 0.001116" rpy="0 4.7123 -0.7853981633974483"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939"/>
+  </joint>
+
+  <link name="c1_rr">
+    <inertial>
+      <origin xyz="0 -0.02633 0" rpy="0 0 0"/>
+      <mass value="0.024357719"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0"
+               iyy="0.00001" iyz="0.0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 -0.0252 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/connect.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -0.02633 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/connect_coll.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="j_c2_rr" type="fixed">
+    <parent link="c1_rr"/>
+    <child link="c2_rr"/>
+    <origin xyz="0 -0.054 0" rpy="0 1.5704 3.14159"/>
+  </joint>
+
+  <link name="c2_rr">
+    <inertial>
+      <origin xyz="0 -0.02633 0" rpy="0 0 0"/>
+      <mass value="0.024357719"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0"
+               iyy="0.00001" iyz="0.0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 -0.0252 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/connect.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -0.02633 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/connect_coll.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="j_thigh_rr" type="revolute">
+    <parent link="c2_rr"/>
+    <child link="thigh_rr"/>
+    <origin xyz="0 0 0" rpy="0 3.14159 3.14159"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939"/>
+  </joint>
+
+  <link name="thigh_rr">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.024357719"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0"
+               iyy="0.00001" iyz="0.0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/thigh_l.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/thigh_l_coll.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="j_tibia_rr" type="revolute">
+    <parent link="thigh_rr"/>
+    <child link="tibia_rr"/>
+    <origin xyz="0 -0.0645 -0.0145" rpy="-1.5707 0 3.14159"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939"/>
+  </joint>
+
+  <link name="tibia_rr">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.024357719"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0"
+               iyy="0.00001" iyz="0.0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/tibia_l.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/tibia_l_coll.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+
+  <!-- ═══════════════════════════════════════════════════════════
+       LEG: LEFT FRONT (lf)
+       Body attachment: xyz="0.1248 0.06164 0.001116"
+                        rpy="0 4.7123 2.356194490192345"
+  ═══════════════════════════════════════════════════════════ -->
+
+  <joint name="j_c1_lf" type="revolute">
+    <parent link="MP_BODY"/>
+    <child link="c1_lf"/>
+    <origin xyz="0.1248 0.06164 0.001116" rpy="0 4.7123 2.356194490192345"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939"/>
+  </joint>
+
+  <link name="c1_lf">
+    <inertial>
+      <origin xyz="0 -0.02633 0" rpy="0 0 0"/>
+      <mass value="0.024357719"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0"
+               iyy="0.00001" iyz="0.0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 -0.0252 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/connect.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -0.02633 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/connect_coll.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="j_c2_lf" type="fixed">
+    <parent link="c1_lf"/>
+    <child link="c2_lf"/>
+    <origin xyz="0 -0.054 0" rpy="0 1.5704 3.14159"/>
+  </joint>
+
+  <link name="c2_lf">
+    <inertial>
+      <origin xyz="0 -0.02633 0" rpy="0 0 0"/>
+      <mass value="0.024357719"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0"
+               iyy="0.00001" iyz="0.0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 -0.0252 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/connect.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -0.02633 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/connect_coll.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="j_thigh_lf" type="revolute">
+    <parent link="c2_lf"/>
+    <child link="thigh_lf"/>
+    <origin xyz="0 0 0" rpy="0 3.14159 3.14159"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939"/>
+  </joint>
+
+  <link name="thigh_lf">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.024357719"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0"
+               iyy="0.00001" iyz="0.0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/thigh_l.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/thigh_l_coll.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="j_tibia_lf" type="revolute">
+    <parent link="thigh_lf"/>
+    <child link="tibia_lf"/>
+    <origin xyz="0 -0.0645 -0.0145" rpy="-1.5707 0 3.14159"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939"/>
+  </joint>
+
+  <link name="tibia_lf">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.024357719"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0"
+               iyy="0.00001" iyz="0.0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/tibia_l.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/tibia_l_coll.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+
+  <!-- ═══════════════════════════════════════════════════════════
+       LEG: LEFT MIDDLE (lm)
+       Body attachment: xyz="0 0.1034 0.001116"
+                        rpy="0 4.7123 3.14159"
+  ═══════════════════════════════════════════════════════════ -->
+
+  <joint name="j_c1_lm" type="revolute">
+    <parent link="MP_BODY"/>
+    <child link="c1_lm"/>
+    <origin xyz="0 0.1034 0.001116" rpy="0 4.7123 3.14159"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939"/>
+  </joint>
+
+  <link name="c1_lm">
+    <inertial>
+      <origin xyz="0 -0.02633 0" rpy="0 0 0"/>
+      <mass value="0.024357719"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0"
+               iyy="0.00001" iyz="0.0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 -0.0252 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/connect.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -0.02633 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/connect_coll.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="j_c2_lm" type="fixed">
+    <parent link="c1_lm"/>
+    <child link="c2_lm"/>
+    <origin xyz="0 -0.054 0" rpy="0 1.5704 3.14159"/>
+  </joint>
+
+  <link name="c2_lm">
+    <inertial>
+      <origin xyz="0 -0.02633 0" rpy="0 0 0"/>
+      <mass value="0.024357719"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0"
+               iyy="0.00001" iyz="0.0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 -0.0252 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/connect.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -0.02633 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/connect_coll.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="j_thigh_lm" type="revolute">
+    <parent link="c2_lm"/>
+    <child link="thigh_lm"/>
+    <origin xyz="0 0 0" rpy="0 3.14159 3.14159"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939"/>
+  </joint>
+
+  <link name="thigh_lm">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.024357719"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0"
+               iyy="0.00001" iyz="0.0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/thigh_l.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/thigh_l_coll.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="j_tibia_lm" type="revolute">
+    <parent link="thigh_lm"/>
+    <child link="tibia_lm"/>
+    <origin xyz="0 -0.0645 -0.0145" rpy="-1.5707 0 3.14159"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939"/>
+  </joint>
+
+  <link name="tibia_lm">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.024357719"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0"
+               iyy="0.00001" iyz="0.0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/tibia_l.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/tibia_l_coll.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+
+  <!-- ═══════════════════════════════════════════════════════════
+       LEG: LEFT REAR (lr)
+       Body attachment: xyz="-0.1248 0.06164 0.001116"
+                        rpy="0 4.7123 3.9269908169872414"
+  ═══════════════════════════════════════════════════════════ -->
+
+  <joint name="j_c1_lr" type="revolute">
+    <parent link="MP_BODY"/>
+    <child link="c1_lr"/>
+    <origin xyz="-0.1248 0.06164 0.001116" rpy="0 4.7123 3.9269908169872414"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939"/>
+  </joint>
+
+  <link name="c1_lr">
+    <inertial>
+      <origin xyz="0 -0.02633 0" rpy="0 0 0"/>
+      <mass value="0.024357719"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0"
+               iyy="0.00001" iyz="0.0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 -0.0252 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/connect.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -0.02633 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/connect_coll.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="j_c2_lr" type="fixed">
+    <parent link="c1_lr"/>
+    <child link="c2_lr"/>
+    <origin xyz="0 -0.054 0" rpy="0 1.5704 3.14159"/>
+  </joint>
+
+  <link name="c2_lr">
+    <inertial>
+      <origin xyz="0 -0.02633 0" rpy="0 0 0"/>
+      <mass value="0.024357719"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0"
+               iyy="0.00001" iyz="0.0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 -0.0252 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/connect.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 -0.02633 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/connect_coll.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="j_thigh_lr" type="revolute">
+    <parent link="c2_lr"/>
+    <child link="thigh_lr"/>
+    <origin xyz="0 0 0" rpy="0 3.14159 3.14159"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939"/>
+  </joint>
+
+  <link name="thigh_lr">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.024357719"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0"
+               iyy="0.00001" iyz="0.0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/thigh_l.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/thigh_l_coll.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="j_tibia_lr" type="revolute">
+    <parent link="thigh_lr"/>
+    <child link="tibia_lr"/>
+    <origin xyz="0 -0.0645 -0.0145" rpy="-1.5707 0 3.14159"/>
+    <axis xyz="1 0 0"/>
+    <limit effort="2.8" velocity="5.6548668" lower="-2.6179939" upper="2.6179939"/>
+  </joint>
+
+  <link name="tibia_lr">
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="0.024357719"/>
+      <inertia ixx="0.00001" ixy="0.0" ixz="0.0"
+               iyy="0.00001" iyz="0.0" izz="0.00001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/tibia_l.STL" scale="1 1 1"/>
+      </geometry>
+      <material name="Grey">
+        <color rgba="0.20 0.20 0.20 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="./meshes/tibia_l_coll.STL" scale="1 1 1"/>
+      </geometry>
+    </collision>
+  </link>
+
+</robot>
