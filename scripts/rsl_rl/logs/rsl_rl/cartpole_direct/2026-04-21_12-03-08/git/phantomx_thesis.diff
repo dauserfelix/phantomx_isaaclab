@@ -1,0 +1,53 @@
+--- git commit ---
+6026cba1f41867ddc7aa94d3d26f434e78afd5ef
+
+
+--- git status ---
+On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-04-16_22-29-15/exported/policy.pt
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-04-21_12-03-08/
+	scripts/rsl_rl/outputs/2026-04-20/
+	scripts/rsl_rl/outputs/2026-04-21/
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-04-16_22-29-15/exported/policy.pt b/scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-04-16_22-29-15/exported/policy.pt
+index 3fe6881..5463783 100644
+Binary files a/scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-04-16_22-29-15/exported/policy.pt and b/scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-04-16_22-29-15/exported/policy.pt differ
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc
+index 55b53a7..fdc2b1f 100644
+Binary files a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc and b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc differ
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
+index 11f7f7b..aa33a6e 100644
+--- a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
++++ b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
+@@ -128,7 +128,7 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
+     # REWARD SCALES - TUNED FOR HEXAPOD LOCOMOTION
+     # =====================================================
+     # 🎯 TRACKING REWARDS (positive)
+-    lin_vel_reward_scale = 3.0      
++    lin_vel_reward_scale = 4.0      
+     yaw_rate_reward_scale = 2.0     # 🔧 Reduced from 1.0 - yaw weniger wichtig
+ 
+     height_reward_scale = 0.2   # Stärke des Rewards (tunable)
+@@ -142,7 +142,7 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
+     action_rate_reward_scale = -0.02    # Keine ruckartigen Actions
+     flat_orientation_reward_scale = -3.0  # 🔧 Reduced from -5.0 - zu harsh
+ 
+-    movement_penalty_scale = 3.0
++    movement_penalty_scale = 4.0
+     
+     # 🆕 SURVIVAL REWARD (critical!)
+     alive_reward_scale = 0.3  # Konstante Belohnung fürs Überleben

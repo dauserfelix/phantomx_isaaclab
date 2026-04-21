@@ -1,0 +1,244 @@
+--- git commit ---
+6026cba1f41867ddc7aa94d3d26f434e78afd5ef
+
+
+--- git status ---
+On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-04-16_22-29-15/exported/policy.pt
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/__init__.cpython-311.pyc
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env.cpython-311.pyc
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env.py
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-04-21_12-03-08/
+	scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-04-21_12-30-51/
+	scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-04-21_12-55-29/
+	scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-04-21_13-11-07/
+	scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-04-21_14-06-13/
+	scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-04-21_14-07-03/
+	scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-04-21_14-27-01/
+	scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-04-21_15-01-58/
+	scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-04-21_15-03-06/
+	scripts/rsl_rl/outputs/2026-04-20/
+	scripts/rsl_rl/outputs/2026-04-21/
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-04-16_22-29-15/exported/policy.pt b/scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-04-16_22-29-15/exported/policy.pt
+index 3fe6881..5463783 100644
+Binary files a/scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-04-16_22-29-15/exported/policy.pt and b/scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-04-16_22-29-15/exported/policy.pt differ
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/__init__.cpython-311.pyc b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/__init__.cpython-311.pyc
+index c31770c..f67bcf9 100644
+Binary files a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/__init__.cpython-311.pyc and b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/__init__.cpython-311.pyc differ
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env.cpython-311.pyc b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env.cpython-311.pyc
+index ddd0918..ed3f721 100644
+Binary files a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env.cpython-311.pyc and b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env.cpython-311.pyc differ
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc
+index 55b53a7..c80d9ca 100644
+Binary files a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc and b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc differ
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env.py b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env.py
+index 2e64631..bc571c4 100644
+--- a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env.py
++++ b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env.py
+@@ -29,7 +29,8 @@ class PhantomxThesisEnv(DirectRLEnv):
+             device=self.device
+         )
+ 
+-        # X/Y linear velocity and yaw angular velocity commands
++        # X/Y linear velocity and yaw angular velocity commands which the Agend should learn to track
++        # Next steps: implement terminal input for this commands
+         self._commands = torch.zeros(self.num_envs, 3, device=self.device)
+         
+         # 🆕 Curriculum learning: track training progress
+@@ -121,12 +122,6 @@ class PhantomxThesisEnv(DirectRLEnv):
+             dim=1
+         )
+         lin_vel_error_mapped = torch.exp(-lin_vel_error / 0.25)
+-
+-
+-        # flat_orientation	Winkel (Pose)
+-        # ang_vel_xy	Kippgeschwindigkeit
+-        # z_vel	hoch/runter Bewegung
+-        # yaw_rate	Drehung
+         
+         # yaw rate tracking (exponential reward)
+         yaw_rate_error = torch.square(
+@@ -168,11 +163,9 @@ class PhantomxThesisEnv(DirectRLEnv):
+         alive_reward = torch.ones_like(lin_vel_error)
+ 
+         #movement penalty for inactivity
+-        speed = torch.norm(self._robot.data.root_lin_vel_b[:, :2], dim=1)
+-        inactive = speed < self.cfg.min_movement_threshold
+-        speed = torch.norm(self._robot.data.root_lin_vel_b[:, :2], dim=1)
+-        inactive = speed < self.cfg.min_movement_threshold
+-        movement_penalty = inactive.float()
++        forward_speed = self._robot.data.root_lin_vel_b[:, 0]  # positiv = vorwärts, negativ = rückwärts
++        is_moving_forward = forward_speed > self.cfg.movement_speed_x
++        movement_penalty = (~is_moving_forward).float()  # Bestraft wenn nicht vorwärts bewegt
+ 
+         rewards = {
+             "track_lin_vel_xy_exp": lin_vel_error_mapped * self.cfg.lin_vel_reward_scale * self.step_dt,
+@@ -210,11 +203,11 @@ class PhantomxThesisEnv(DirectRLEnv):
+         tilt = torch.sum(torch.square(gravity[:, :2]), dim=1)
+ 
+         # Threshold (anpassen!)
+-        max_tilt = 0.4  # ~ ca. 45–60° Neigung
++        max_tilt = 0.1  # ~ ca. 45–60° Neigung
+ 
+         # Termination:
+         died = (
+-            (base_height < 0.03) |
++            (base_height < 0.05) |
+             (base_height > 0.20) |
+             (tilt > max_tilt)
+         )
+@@ -255,9 +248,10 @@ class PhantomxThesisEnv(DirectRLEnv):
+         if self._training_iteration < 150:
+             # Stage 1: Learn to stand
+             self._commands[env_ids] = 0.0
++            self._commands[env_ids, 0] = torch.rand(len(env_ids), device=self.device) * 0.3  # forward
+         elif self._training_iteration < 300:
+             # Stage 2: Learn slow forward walk
+-            self._commands[env_ids, 0] = torch.rand(len(env_ids), device=self.device) * 0.3  # forward
++            self._commands[env_ids, 0] = torch.rand(len(env_ids), device=self.device) * 0.6  # forward
+             self._commands[env_ids, 1] = 0.0  # no sideways
+             self._commands[env_ids, 2] = 0.0  # no turning
+         else:
+@@ -272,7 +266,7 @@ class PhantomxThesisEnv(DirectRLEnv):
+         # Reset robot state with small randomization for robustness
+         joint_pos = self._robot.data.default_joint_pos[env_ids]
+         # 🆕 Small initial joint randomization
+-        joint_pos += torch.randn_like(joint_pos) * 0.05
++        joint_pos += torch.randn_like(joint_pos) * 0.10   #default: 0.05
+         
+         joint_vel = self._robot.data.default_joint_vel[env_ids]
+         default_root_state = self._robot.data.default_root_state[env_ids].clone()
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
+index 11f7f7b..59458f8 100644
+--- a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
++++ b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
+@@ -117,32 +117,33 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
+     events: EventCfg = EventCfg()
+ 
+     # =====================================================
+-    # ROBOT
++    # ROBOT Movement Params
+     # =====================================================
+     robot: ArticulationCfg = PHANTOMX_CFG.replace(prim_path="/World/envs/env_.*/Robot")
+     target_base_height = 0.10    # 120 mm
+-    min_movement_threshold = 0.05   # 5 cm/s
++    movement_speed_x = 0.10   # 10 cm/s
++    yaw_rotation_speed_x = 0.0   # 0 rad/s 
+     
+ 
+     # =====================================================
+     # REWARD SCALES - TUNED FOR HEXAPOD LOCOMOTION
+     # =====================================================
+     # 🎯 TRACKING REWARDS (positive)
+-    lin_vel_reward_scale = 3.0      
+-    yaw_rate_reward_scale = 2.0     # 🔧 Reduced from 1.0 - yaw weniger wichtig
++    lin_vel_reward_scale = 10.0      
++    yaw_rate_reward_scale = 4.0     # 🔧 Reduced from 1.0 - yaw weniger wichtig
+ 
+-    height_reward_scale = 0.2   # Stärke des Rewards (tunable)
++    height_reward_scale = 0.1   # Stärke des Rewards (tunable)
+     
+     
+     # 🚫 PENALTIES (negative)
+     z_vel_reward_scale = -2.0       # Bleib flach
+-    ang_vel_reward_scale = -2.5    # Kein Roll/Pitch
++    ang_vel_reward_scale = -5      # Kein Roll/Pitch
+     joint_torque_reward_scale = -2e-5   # 🔧 Leicht erhöht - energie-effizienz wichtiger
+     joint_accel_reward_scale = -2.5e-7  # 🔧 Erhöht - sanfte Bewegungen fördern
+     action_rate_reward_scale = -0.02    # Keine ruckartigen Actions
+     flat_orientation_reward_scale = -3.0  # 🔧 Reduced from -5.0 - zu harsh
+ 
+-    movement_penalty_scale = 3.0
++    movement_penalty_scale = 10.0
+     
+     # 🆕 SURVIVAL REWARD (critical!)
+     alive_reward_scale = 0.3  # Konstante Belohnung fürs Überleben
+@@ -150,70 +151,7 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
+     # =====================================================
+     # TERMINATION THRESHOLDS - RELAXED FOR LEARNING
+     # =====================================================
+-    # 🔧 WICHTIG: Diese Werte bestimmen wann eine Episode abbricht
+-    # Zu streng = Robot kann nicht lernen
+-    # Zu locker = Robot lernt schlechte Strategien
+-    
+-    # Height threshold - unter dieser Höhe stirbt der Robot
+-    # Default: 0.02m (2cm) - SEHR niedrig, nur für komplett umgefallen
+-    # 🔧 Erhöhe das schrittweise wenn mean_episode_length > 200 erreicht ist:
+-    #    Phase 1 (jetzt): 0.05m - sehr tolerant, lernt Stabilität
+-    #    Phase 2 (bei >100 ep_len): 0.07m - etwas strenger
+-    #    Phase 3 (bei >200 ep_len): 0.09m - finale Schwelle
+-    termination_height = 0.03
+-    
+-    # Tilt threshold - maximale Neigung bevor Episode abbricht
+-    # projected_gravity_b[:, :2] squared sum
+-    # Bei 0° upright: ~0.0
+-    # Bei 45° tilt: ~0.5
+-    # Bei 90° (auf Seite): ~1.0
+-    # 🔧 Aktuelle Einstellung: 1.0 = sehr tolerant (fast auf der Seite)
+-    #    Reduziere das später auf 0.8 → 0.6 → 0.5 für bessere Performance
+-    termination_tilt = -0.5
+-    
+-    # Angle reference (kept for compatibility, not actively used)
+-    max_tilt_angle_deg = 45.0
+ 
++    termination_height = 0.03
+ 
+-# =====================================================
+-# TRAINING PROGRESSION GUIDE
+-# =====================================================
+-# 
+-# 📊 Monitoring:
+-# - Mean episode length sollte wachsen: 13 → 50 → 100 → 200+
+-# - time_out sollte steigen: 0.0 → 0.1 → 0.5 → 0.9+
+-# - Mean reward sollte positiv werden und wachsen
+-#
+-# 🎓 Curriculum Stages (automatisch in env.py):
+-# - Stage 1 (iter 0-200): Nur stehen lernen (commands=0)
+-# - Stage 2 (iter 200-500): Langsames Vorwärtsgehen
+-# - Stage 3 (iter 500+): Volle Befehle mit ansteigender Schwierigkeit
+-#
+-# 🔧 Manual Tuning Schedule:
+-# 
+-# PHASE 1 - SURVIVAL (jetzt):
+-# ✓ termination_height = 0.05 (sehr tolerant)
+-# ✓ termination_tilt = 1.0 (sehr tolerant)
+-# ✓ alive_reward_scale = 0.5 (hoch)
+-# Ziel: mean_episode_length > 100
+-#
+-# PHASE 2 - BASIC LOCOMOTION (wenn ep_len > 100):
+-# - termination_height = 0.07
+-# - termination_tilt = 0.8
+-# - alive_reward_scale = 0.3
+-# - lin_vel_reward_scale = 8.0 (erhöhen)
+-# Ziel: mean_episode_length > 200, time_out > 0.3
+-#
+-# PHASE 3 - REFINEMENT (wenn ep_len > 200):
+-# - termination_height = 0.09
+-# - termination_tilt = 0.6
+-# - alive_reward_scale = 0.1
+-# - lin_vel_reward_scale = 10.0
+-# - joint_accel_reward_scale = -5e-7 (glattere Bewegungen)
+-# Ziel: time_out > 0.7, smooth gait
+-#
+-# PHASE 4 - POLISHING (wenn time_out > 0.7):
+-# - termination_tilt = 0.5
+-# - action_rate_reward_scale = -0.02 (sanftere Actions)
+-# - Füge weitere Rewards hinzu (z.B. foot clearance, symmetrie)
+-# =====================================================
+\ No newline at end of file
++    termination_tilt = 0.5

@@ -117,32 +117,33 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
     events: EventCfg = EventCfg()
 
     # =====================================================
-    # ROBOT
+    # ROBOT Movement Params
     # =====================================================
     robot: ArticulationCfg = PHANTOMX_CFG.replace(prim_path="/World/envs/env_.*/Robot")
     target_base_height = 0.10    # 120 mm
-    min_movement_threshold = 0.05   # 5 cm/s
+    movement_speed_x = 0.10   # 10 cm/s
+    yaw_rotation_speed_x = 0.0   # 0 rad/s 
     
 
     # =====================================================
     # REWARD SCALES - TUNED FOR HEXAPOD LOCOMOTION
     # =====================================================
     # 🎯 TRACKING REWARDS (positive)
-    lin_vel_reward_scale = 3.0      
-    yaw_rate_reward_scale = 2.0     # 🔧 Reduced from 1.0 - yaw weniger wichtig
+    lin_vel_reward_scale = 10.0      
+    yaw_rate_reward_scale = 4.0     # 🔧 Reduced from 1.0 - yaw weniger wichtig
 
-    height_reward_scale = 0.2   # Stärke des Rewards (tunable)
+    height_reward_scale = 0.1   # Stärke des Rewards (tunable)
     
     
     # 🚫 PENALTIES (negative)
     z_vel_reward_scale = -2.0       # Bleib flach
-    ang_vel_reward_scale = -2.5    # Kein Roll/Pitch
+    ang_vel_reward_scale = -5      # Kein Roll/Pitch
     joint_torque_reward_scale = -2e-5   # 🔧 Leicht erhöht - energie-effizienz wichtiger
     joint_accel_reward_scale = -2.5e-7  # 🔧 Erhöht - sanfte Bewegungen fördern
     action_rate_reward_scale = -0.02    # Keine ruckartigen Actions
     flat_orientation_reward_scale = -3.0  # 🔧 Reduced from -5.0 - zu harsh
 
-    movement_penalty_scale = 3.0
+    movement_penalty_scale = 10.0
     
     # 🆕 SURVIVAL REWARD (critical!)
     alive_reward_scale = 0.3  # Konstante Belohnung fürs Überleben
@@ -150,70 +151,7 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
     # =====================================================
     # TERMINATION THRESHOLDS - RELAXED FOR LEARNING
     # =====================================================
-    # 🔧 WICHTIG: Diese Werte bestimmen wann eine Episode abbricht
-    # Zu streng = Robot kann nicht lernen
-    # Zu locker = Robot lernt schlechte Strategien
-    
-    # Height threshold - unter dieser Höhe stirbt der Robot
-    # Default: 0.02m (2cm) - SEHR niedrig, nur für komplett umgefallen
-    # 🔧 Erhöhe das schrittweise wenn mean_episode_length > 200 erreicht ist:
-    #    Phase 1 (jetzt): 0.05m - sehr tolerant, lernt Stabilität
-    #    Phase 2 (bei >100 ep_len): 0.07m - etwas strenger
-    #    Phase 3 (bei >200 ep_len): 0.09m - finale Schwelle
+
     termination_height = 0.03
-    
-    # Tilt threshold - maximale Neigung bevor Episode abbricht
-    # projected_gravity_b[:, :2] squared sum
-    # Bei 0° upright: ~0.0
-    # Bei 45° tilt: ~0.5
-    # Bei 90° (auf Seite): ~1.0
-    # 🔧 Aktuelle Einstellung: 1.0 = sehr tolerant (fast auf der Seite)
-    #    Reduziere das später auf 0.8 → 0.6 → 0.5 für bessere Performance
-    termination_tilt = -0.5
-    
-    # Angle reference (kept for compatibility, not actively used)
-    max_tilt_angle_deg = 45.0
 
-
-# =====================================================
-# TRAINING PROGRESSION GUIDE
-# =====================================================
-# 
-# 📊 Monitoring:
-# - Mean episode length sollte wachsen: 13 → 50 → 100 → 200+
-# - time_out sollte steigen: 0.0 → 0.1 → 0.5 → 0.9+
-# - Mean reward sollte positiv werden und wachsen
-#
-# 🎓 Curriculum Stages (automatisch in env.py):
-# - Stage 1 (iter 0-200): Nur stehen lernen (commands=0)
-# - Stage 2 (iter 200-500): Langsames Vorwärtsgehen
-# - Stage 3 (iter 500+): Volle Befehle mit ansteigender Schwierigkeit
-#
-# 🔧 Manual Tuning Schedule:
-# 
-# PHASE 1 - SURVIVAL (jetzt):
-# ✓ termination_height = 0.05 (sehr tolerant)
-# ✓ termination_tilt = 1.0 (sehr tolerant)
-# ✓ alive_reward_scale = 0.5 (hoch)
-# Ziel: mean_episode_length > 100
-#
-# PHASE 2 - BASIC LOCOMOTION (wenn ep_len > 100):
-# - termination_height = 0.07
-# - termination_tilt = 0.8
-# - alive_reward_scale = 0.3
-# - lin_vel_reward_scale = 8.0 (erhöhen)
-# Ziel: mean_episode_length > 200, time_out > 0.3
-#
-# PHASE 3 - REFINEMENT (wenn ep_len > 200):
-# - termination_height = 0.09
-# - termination_tilt = 0.6
-# - alive_reward_scale = 0.1
-# - lin_vel_reward_scale = 10.0
-# - joint_accel_reward_scale = -5e-7 (glattere Bewegungen)
-# Ziel: time_out > 0.7, smooth gait
-#
-# PHASE 4 - POLISHING (wenn time_out > 0.7):
-# - termination_tilt = 0.5
-# - action_rate_reward_scale = -0.02 (sanftere Actions)
-# - Füge weitere Rewards hinzu (z.B. foot clearance, symmetrie)
-# =====================================================
+    termination_tilt = 0.5

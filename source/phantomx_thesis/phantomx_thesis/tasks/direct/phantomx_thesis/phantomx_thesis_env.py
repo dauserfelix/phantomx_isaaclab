@@ -29,7 +29,8 @@ class PhantomxThesisEnv(DirectRLEnv):
             device=self.device
         )
 
-        # X/Y linear velocity and yaw angular velocity commands
+        # X/Y linear velocity and yaw angular velocity commands which the Agend should learn to track
+        # Next steps: implement terminal input for this commands
         self._commands = torch.zeros(self.num_envs, 3, device=self.device)
         
         # 🆕 Curriculum learning: track training progress
@@ -121,12 +122,6 @@ class PhantomxThesisEnv(DirectRLEnv):
             dim=1
         )
         lin_vel_error_mapped = torch.exp(-lin_vel_error / 0.25)
-
-
-        # flat_orientation	Winkel (Pose)
-        # ang_vel_xy	Kippgeschwindigkeit
-        # z_vel	hoch/runter Bewegung
-        # yaw_rate	Drehung
         
         # yaw rate tracking (exponential reward)
         yaw_rate_error = torch.square(
@@ -168,11 +163,9 @@ class PhantomxThesisEnv(DirectRLEnv):
         alive_reward = torch.ones_like(lin_vel_error)
 
         #movement penalty for inactivity
-        speed = torch.norm(self._robot.data.root_lin_vel_b[:, :2], dim=1)
-        inactive = speed < self.cfg.min_movement_threshold
-        speed = torch.norm(self._robot.data.root_lin_vel_b[:, :2], dim=1)
-        inactive = speed < self.cfg.min_movement_threshold
-        movement_penalty = inactive.float()
+        forward_speed = self._robot.data.root_lin_vel_b[:, 0]  # positiv = vorwärts, negativ = rückwärts
+        is_moving_forward = forward_speed > self.cfg.movement_speed_x
+        movement_penalty = (~is_moving_forward).float()  # Bestraft wenn nicht vorwärts bewegt
 
         rewards = {
             "track_lin_vel_xy_exp": lin_vel_error_mapped * self.cfg.lin_vel_reward_scale * self.step_dt,
@@ -210,11 +203,11 @@ class PhantomxThesisEnv(DirectRLEnv):
         tilt = torch.sum(torch.square(gravity[:, :2]), dim=1)
 
         # Threshold (anpassen!)
-        max_tilt = 0.4  # ~ ca. 45–60° Neigung
+        max_tilt = 0.1  # ~ ca. 45–60° Neigung
 
         # Termination:
         died = (
-            (base_height < 0.03) |
+            (base_height < 0.05) |
             (base_height > 0.20) |
             (tilt > max_tilt)
         )
@@ -255,9 +248,10 @@ class PhantomxThesisEnv(DirectRLEnv):
         if self._training_iteration < 150:
             # Stage 1: Learn to stand
             self._commands[env_ids] = 0.0
+            self._commands[env_ids, 0] = torch.rand(len(env_ids), device=self.device) * 0.3  # forward
         elif self._training_iteration < 300:
             # Stage 2: Learn slow forward walk
-            self._commands[env_ids, 0] = torch.rand(len(env_ids), device=self.device) * 0.3  # forward
+            self._commands[env_ids, 0] = torch.rand(len(env_ids), device=self.device) * 0.6  # forward
             self._commands[env_ids, 1] = 0.0  # no sideways
             self._commands[env_ids, 2] = 0.0  # no turning
         else:
@@ -272,7 +266,7 @@ class PhantomxThesisEnv(DirectRLEnv):
         # Reset robot state with small randomization for robustness
         joint_pos = self._robot.data.default_joint_pos[env_ids]
         # 🆕 Small initial joint randomization
-        joint_pos += torch.randn_like(joint_pos) * 0.05
+        joint_pos += torch.randn_like(joint_pos) * 0.10   #default: 0.05
         
         joint_vel = self._robot.data.default_joint_vel[env_ids]
         default_root_state = self._robot.data.default_root_state[env_ids].clone()
