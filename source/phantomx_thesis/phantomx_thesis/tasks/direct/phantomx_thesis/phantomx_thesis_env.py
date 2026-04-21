@@ -1,13 +1,10 @@
 from __future__ import annotations
-
 import torch
 import gymnasium as gym
-
 import isaaclab.sim as sim_utils
 from isaaclab.assets import Articulation
 from isaaclab.envs import DirectRLEnv
 from isaaclab.sensors import ContactSensor
-
 from .phantomx_thesis_env_cfg import PhantomxThesisEnvCfg
 
 
@@ -29,7 +26,7 @@ class PhantomxThesisEnv(DirectRLEnv):
             device=self.device
         )
 
-        # X/Y linear velocity and yaw angular velocity commands which the Agend should learn to track
+        # X/Y linear velocity and yaw angular velocity commands which the Agent should learn to track
         # Next steps: implement terminal input for this commands
         self._commands = torch.zeros(self.num_envs, 3, device=self.device)
         
@@ -44,6 +41,13 @@ class PhantomxThesisEnv(DirectRLEnv):
 
         self._has_stood_up = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
 
+        # 🆕 Terrain Curriculum Tracking
+        self._terrain_levels = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
+        self._terrain_success_rate = torch.zeros(self.num_envs, dtype=torch.float, device=self.device)
+        
+        # 🆕 Track consecutive successes for terrain progression
+        self._consecutive_successes = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
+
         # Logging
         self._episode_sums = {
             key: torch.zeros(self.num_envs, dtype=torch.float, device=self.device)
@@ -56,7 +60,7 @@ class PhantomxThesisEnv(DirectRLEnv):
                 "dof_acc_l2",
                 "action_rate_l2",
                 "flat_orientation_l2",
-                "alive",  # 🆕 alive reward tracking
+                "alive",
                 "height_tracking",
                 "movement_penalty",
             ]
@@ -122,7 +126,7 @@ class PhantomxThesisEnv(DirectRLEnv):
             dim=1
         )
         lin_vel_error_mapped = torch.exp(-lin_vel_error / 0.25)
-        
+
         # yaw rate tracking (exponential reward)
         yaw_rate_error = torch.square(
             self._commands[:, 2] - self._robot.data.root_ang_vel_b[:, 2]
@@ -155,14 +159,13 @@ class PhantomxThesisEnv(DirectRLEnv):
 
         # Base height tracking reward
         base_height = self._robot.data.root_pos_w[:, 2]
-
         height_error = torch.square(base_height - self.cfg.target_base_height)
         height_reward = torch.exp(-height_error / 0.02)
         
         # 🆕 Alive reward - critical for survival learning!
         alive_reward = torch.ones_like(lin_vel_error)
 
-        #movement penalty for inactivity
+        # Movement penalty for inactivity
         forward_speed = self._robot.data.root_lin_vel_b[:, 0]  # positiv = vorwärts, negativ = rückwärts
         is_moving_forward = forward_speed > self.cfg.movement_speed_x
         movement_penalty = (~is_moving_forward).float()  # Bestraft wenn nicht vorwärts bewegt
@@ -176,8 +179,7 @@ class PhantomxThesisEnv(DirectRLEnv):
             "dof_acc_l2": joint_accel * self.cfg.joint_accel_reward_scale * self.step_dt,
             "action_rate_l2": action_rate * self.cfg.action_rate_reward_scale * self.step_dt,
             "flat_orientation_l2": flat_orientation * self.cfg.flat_orientation_reward_scale * self.step_dt,
-            "alive": alive_reward * self.cfg.alive_reward_scale * self.step_dt,  # 🆕
-
+            "alive": alive_reward * self.cfg.alive_reward_scale * self.step_dt,
             "height_tracking": height_reward * self.cfg.height_reward_scale,
             "movement_penalty": -movement_penalty * self.cfg.movement_penalty_scale * self.step_dt,
         }
@@ -214,12 +216,52 @@ class PhantomxThesisEnv(DirectRLEnv):
 
         return died, time_out
         
-    
-        
     # --------------------- RESET ---------------------
     def _reset_idx(self, env_ids: torch.Tensor | None):
         if env_ids is None or len(env_ids) == self.num_envs:
             env_ids = self._robot._ALL_INDICES
+            
+        # 🆕 TERRAIN CURRICULUM - Update before robot reset
+        # Success = Episode wurde durch Timeout beendet (nicht gestorben)
+        for env_id in env_ids:
+            if self.reset_time_outs[env_id]:
+                # Successful episode (timeout, not death)
+                self._terrain_success_rate[env_id] += 0.1
+                self._consecutive_successes[env_id] += 1
+            else:
+                # Failed episode (died before timeout)
+                self._terrain_success_rate[env_id] -= 0.05
+                self._consecutive_successes[env_id] = 0
+            
+            # Clamp success rate between 0 and 1
+            self._terrain_success_rate[env_id] = torch.clamp(
+                self._terrain_success_rate[env_id], 0.0, 1.0
+            )
+            
+            # Promote to harder terrain if:
+            # - Success rate > 0.7 OR
+            # - 3 consecutive successes
+            if (self._terrain_success_rate[env_id] > 0.7 or 
+                self._consecutive_successes[env_id] >= 3):
+                old_level = self._terrain_levels[env_id].item()
+                self._terrain_levels[env_id] = min(
+                    self._terrain_levels[env_id] + 1, 
+                    4  # Max terrain level (0=flat, 1=gentle, 2=gravel, 3=rough, 4=obstacles)
+                )
+                if self._terrain_levels[env_id] > old_level:
+                    self._terrain_success_rate[env_id] = 0.5  # Reset to neutral
+                    self._consecutive_successes[env_id] = 0
+            
+            # Demote to easier terrain if success rate < 0.3
+            elif self._terrain_success_rate[env_id] < 0.3:
+                old_level = self._terrain_levels[env_id].item()
+                self._terrain_levels[env_id] = max(
+                    self._terrain_levels[env_id] - 1,
+                    0  # Min terrain level
+                )
+                if self._terrain_levels[env_id] < old_level:
+                    self._terrain_success_rate[env_id] = 0.5  # Reset to neutral
+                    self._consecutive_successes[env_id] = 0
             
         self._robot.reset(env_ids)
         super()._reset_idx(env_ids)
@@ -234,7 +276,7 @@ class PhantomxThesisEnv(DirectRLEnv):
         self._actions[env_ids] = 0.0
         self._previous_actions[env_ids] = 0.0
 
-        #aufstehen antraineren- variable rücksetzen
+        # Aufstehen antrainieren - variable rücksetzen
         self._has_stood_up[env_ids] = False
         
         # 🆕 CURRICULUM LEARNING für Commands
@@ -242,15 +284,15 @@ class PhantomxThesisEnv(DirectRLEnv):
         self._training_iteration += 1
         
         # Curriculum stages:
-        # 0-200 iterations: only standing (commands = 0)
-        # 200-500: slow forward walk
-        # 500+: full random commands
+        # 0-150 iterations: slow forward walk + standing
+        # 150-300: medium forward walk
+        # 300+: full random commands
         if self._training_iteration < 150:
-            # Stage 1: Learn to stand
+            # Stage 1: Learn slow forward movement
             self._commands[env_ids] = 0.0
             self._commands[env_ids, 0] = torch.rand(len(env_ids), device=self.device) * 0.3  # forward
         elif self._training_iteration < 300:
-            # Stage 2: Learn slow forward walk
+            # Stage 2: Learn medium forward walk
             self._commands[env_ids, 0] = torch.rand(len(env_ids), device=self.device) * 0.6  # forward
             self._commands[env_ids, 1] = 0.0  # no sideways
             self._commands[env_ids, 2] = 0.0  # no turning
@@ -266,7 +308,7 @@ class PhantomxThesisEnv(DirectRLEnv):
         # Reset robot state with small randomization for robustness
         joint_pos = self._robot.data.default_joint_pos[env_ids]
         # 🆕 Small initial joint randomization
-        joint_pos += torch.randn_like(joint_pos) * 0.10   #default: 0.05
+        joint_pos += torch.randn_like(joint_pos) * 0.10   # default: 0.05
         
         joint_vel = self._robot.data.default_joint_vel[env_ids]
         default_root_state = self._robot.data.default_root_state[env_ids].clone()
@@ -285,10 +327,32 @@ class PhantomxThesisEnv(DirectRLEnv):
             episodic_sum_avg = torch.mean(self._episode_sums[key][env_ids])
             extras["Episode_Reward/" + key] = episodic_sum_avg / self.max_episode_length_s
             self._episode_sums[key][env_ids] = 0.0
+        
+        # 🆕 Terrain distribution logging (only on full reset)
+        if len(env_ids) == self.num_envs:
+            for level in range(5):
+                count = torch.sum(self._terrain_levels == level).item()
+                percentage = (count / self.num_envs) * 100
+                extras[f"Terrain/level_{level}_count"] = count
+                extras[f"Terrain/level_{level}_percent"] = percentage
             
+            # Log terrain statistics
+            extras["Terrain/mean_level"] = torch.mean(self._terrain_levels.float()).item()
+            extras["Terrain/mean_success_rate"] = torch.mean(self._terrain_success_rate).item()
+            
+            # Log curriculum progress
+            extras["Curriculum/training_iteration"] = self._training_iteration
+            if self._training_iteration < 150:
+                extras["Curriculum/stage"] = 1
+            elif self._training_iteration < 300:
+                extras["Curriculum/stage"] = 2
+            else:
+                extras["Curriculum/stage"] = 3
+        
         self.extras["log"] = dict()
         self.extras["log"].update(extras)
         
         extras = dict()
         extras["Episode_Termination/time_out"] = torch.count_nonzero(self.reset_time_outs[env_ids]).item()
+        extras["Episode_Termination/died"] = len(env_ids) - torch.count_nonzero(self.reset_time_outs[env_ids]).item()
         self.extras["log"].update(extras)

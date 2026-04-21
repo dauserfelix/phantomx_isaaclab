@@ -17,6 +17,9 @@ from isaaclab.utils import configclass
 from isaaclab.sensors import ContactSensorCfg
 from isaaclab_assets.robots.phantomx import PHANTOMX_CFG  # isort: skip
 
+#  Kiesweg:
+from isaaclab.terrains import TerrainImporterCfg
+
 
 @configclass
 class EventCfg:
@@ -42,7 +45,31 @@ class EventCfg:
             "operation": "add",
         },
     )
-    
+
+    randomize_terrain_friction = EventTerm(
+        func=mdp.randomize_rigid_body_material,
+        mode="reset",  # Bei jedem Reset ändern
+        params={
+            "asset_cfg": SceneEntityCfg("robot", body_names=".*"),
+            "static_friction_range": (0.4, 0.9),   # Große Variation!
+            "dynamic_friction_range": (0.3, 0.7),  # Von rutschig bis griffig
+            "restitution_range": (0.0, 0.2),       # Leichtes Federn
+            "num_buckets": 128,
+        },
+    )
+
+    # 🆕 Ground Contact Properties (am Boden selbst)
+    randomize_ground_friction = EventTerm(
+        func=mdp.randomize_rigid_body_material,
+        mode="startup",
+        params={
+            "asset_cfg": SceneEntityCfg("ground"),  # Terrain selbst
+            "static_friction_range": (0.5, 0.8),
+            "dynamic_friction_range": (0.3, 0.6),
+            "restitution_range": (0.0, 0.1),
+            "num_buckets": 64,
+        },
+    )
 
 
 @configclass
@@ -82,19 +109,42 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
         ),
     )
     
+    
     terrain = TerrainImporterCfg(
         prim_path="/World/ground",
-        terrain_type="plane",
-        collision_group=-1,
-        physics_material=sim_utils.RigidBodyMaterialCfg(
-            friction_combine_mode="multiply",
-            restitution_combine_mode="multiply",
-            static_friction=1.0,
-            dynamic_friction=1.0,
-            restitution=0.0,
+        terrain_type="generator",
+        terrain_generator=TerrainGeneratorCfg(
+            size=(8.0, 8.0),
+            border_width=20.0,
+            num_rows=5,
+            num_cols=5,
+            horizontal_scale=0.05,        # Kiesgröße
+            vertical_scale=0.025,         # ±2.5cm Variation
+            slope_threshold=None,
+            use_cache=False,
+            sub_terrains={
+                "gravel": HfRandomUniformTerrainCfg(
+                    size=(8.0, 8.0),
+                    horizontal_scale=0.05,
+                    vertical_scale=0.025,
+                    border_width=0.5,
+                    proportion=1.0,
+                    noise_range=(0.01, 0.05),
+                    noise_step=0.01,
+                ),
+            },
+            curriculum=False,
+            physics_material=sim_utils.RigidBodyMaterialCfg(
+                friction_combine_mode="multiply",
+                restitution_combine_mode="multiply",
+                static_friction=0.6,      # Rutschiger Kies
+                dynamic_friction=0.4,     
+                restitution=0.1,          # Leichtes Zurückfedern (Kies gibt nach)
+            ),
+            color_scheme="height",
+            debug_vis=True,
         ),
-        debug_vis=False,
-    )
+)
     
     contact_sensor: ContactSensorCfg = ContactSensorCfg(
         prim_path="/World/envs/env_.*/Robot/.*",
