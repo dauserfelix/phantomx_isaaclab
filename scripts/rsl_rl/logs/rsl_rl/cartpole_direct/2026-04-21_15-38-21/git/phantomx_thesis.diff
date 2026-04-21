@@ -1,0 +1,62 @@
+--- git commit ---
+a937e55ba3297e46ab645075ef54d53c5b21f18f
+
+
+--- git status ---
+On branch master
+Your branch is ahead of 'origin/master' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env.cpython-311.pyc
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/__pycache__/rsl_rl_ppo_cfg.cpython-311.pyc
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/rsl_rl_ppo_cfg.py
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-04-21_15-38-21/
+	scripts/rsl_rl/outputs/2026-04-21/15-38-21/
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env.cpython-311.pyc b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env.cpython-311.pyc
+index ed3f721..aaa4d40 100644
+Binary files a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env.cpython-311.pyc and b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env.cpython-311.pyc differ
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc
+index c80d9ca..89a1207 100644
+Binary files a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc and b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc differ
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/__pycache__/rsl_rl_ppo_cfg.cpython-311.pyc b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/__pycache__/rsl_rl_ppo_cfg.cpython-311.pyc
+index 4b81778..5dd3cb8 100644
+Binary files a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/__pycache__/rsl_rl_ppo_cfg.cpython-311.pyc and b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/__pycache__/rsl_rl_ppo_cfg.cpython-311.pyc differ
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/rsl_rl_ppo_cfg.py b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/rsl_rl_ppo_cfg.py
+index 1727c08..6ec4fdb 100644
+--- a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/rsl_rl_ppo_cfg.py
++++ b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/rsl_rl_ppo_cfg.py
+@@ -11,7 +11,7 @@ from isaaclab_rl.rsl_rl import RslRlOnPolicyRunnerCfg, RslRlPpoActorCriticCfg, R
+ @configclass
+ class PPORunnerCfg(RslRlOnPolicyRunnerCfg):
+     num_steps_per_env = 24
+-    max_iterations = 1500
++    max_iterations = 10000
+     save_interval = 50
+     experiment_name = "cartpole_direct"
+     # experiment_name = "phantomx_thesis_direct_ppo"
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
+index 59458f8..d25a3a6 100644
+--- a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
++++ b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
+@@ -49,7 +49,7 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
+     # =====================================================
+     # ENVIRONMENT SETUP
+     # =====================================================
+-    episode_length_s = 20.0
++    episode_length_s = 40.0
+     decimation = 4
+     action_scale = 0.5  # 🔧 Reduziert von 1.0 - kleinere Actions für Stabilität
+     action_space = 18  # PhantomX: 6 legs × 3 joints = 18 DOF

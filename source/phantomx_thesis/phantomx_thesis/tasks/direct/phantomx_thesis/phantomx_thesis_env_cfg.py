@@ -42,6 +42,7 @@ class EventCfg:
             "operation": "add",
         },
     )
+    
 
 
 @configclass
@@ -49,7 +50,7 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
     # =====================================================
     # ENVIRONMENT SETUP
     # =====================================================
-    episode_length_s = 20.0
+    episode_length_s = 40.0
     decimation = 4
     action_scale = 0.5  # 🔧 Reduziert von 1.0 - kleinere Actions für Stabilität
     action_space = 18  # PhantomX: 6 legs × 3 joints = 18 DOF
