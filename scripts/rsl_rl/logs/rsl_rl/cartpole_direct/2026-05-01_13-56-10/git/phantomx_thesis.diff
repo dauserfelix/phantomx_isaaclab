@@ -1,0 +1,34 @@
+--- git commit ---
+75d8c8a1ac2c519446025521bb6cdc6d0fa9a00e
+
+
+--- git status ---
+On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-04-21_15-38-21/exported/policy.pt
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/__init__.cpython-311.pyc
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/__pycache__/rsl_rl_ppo_cfg.cpython-311.pyc
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-05-01_13-56-10/
+	scripts/rsl_rl/outputs/2026-05-01/
+	source/phantomx_thesis/usd_files_phantomx/isaacsim_ros2_interface/
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-04-21_15-38-21/exported/policy.pt b/scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-04-21_15-38-21/exported/policy.pt
+index e63b2c5..c66be82 100644
+Binary files a/scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-04-21_15-38-21/exported/policy.pt and b/scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-04-21_15-38-21/exported/policy.pt differ
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/__init__.cpython-311.pyc b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/__init__.cpython-311.pyc
+index 209c0a1..ac76fbb 100644
+Binary files a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/__init__.cpython-311.pyc and b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/__init__.cpython-311.pyc differ
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/__pycache__/rsl_rl_ppo_cfg.cpython-311.pyc b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/__pycache__/rsl_rl_ppo_cfg.cpython-311.pyc
+index 5dd3cb8..78f3bc9 100644
+Binary files a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/__pycache__/rsl_rl_ppo_cfg.cpython-311.pyc and b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/__pycache__/rsl_rl_ppo_cfg.cpython-311.pyc differ
