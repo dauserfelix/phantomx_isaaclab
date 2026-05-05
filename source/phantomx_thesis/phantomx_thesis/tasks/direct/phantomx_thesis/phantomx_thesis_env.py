@@ -292,3 +292,39 @@ class PhantomxThesisEnv(DirectRLEnv):
         extras = dict()
         extras["Episode_Termination/time_out"] = torch.count_nonzero(self.reset_time_outs[env_ids]).item()
         self.extras["log"].update(extras)
+
+        
+
+    def get_IO_descriptors(self) -> dict:
+        return {
+            "observations": {
+                "policy": [
+                    {"name": "root_lin_vel_b",          "size": 3,  "description": "Root linear velocity in body frame (x, y, z)"},
+                    {"name": "root_ang_vel_b",           "size": 3,  "description": "Root angular velocity in body frame (roll, pitch, yaw)"},
+                    {"name": "projected_gravity_b",      "size": 3,  "description": "Projected gravity vector in body frame"},
+                    {"name": "commands",                 "size": 3,  "description": "Velocity commands (vx, vy, yaw_rate)"},
+                    {"name": "joint_pos_rel",            "size": 18, "description": "Joint positions relative to default pose"},
+                    {"name": "joint_vel",                "size": 18, "description": "Joint velocities"},
+                    {"name": "actions",                  "size": 18, "description": "Previous actions"},
+                ]
+            },
+            "actions": [
+                {
+                    "name": "joint_position_targets",
+                    "size": 18,
+                    "description": "Joint position targets (scaled deviation from default + default_joint_pos)",
+                    "scale": self.cfg.action_scale,
+                }
+            ],
+            "articulations": {
+                "robot": {
+                    "num_joints": self._robot.num_joints,
+                    "joint_names": self._robot.joint_names,
+                }
+            },
+            "scene": {
+                "num_envs": self.num_envs,
+                "terrain": str(type(self._terrain).__name__),
+                "target_base_height": self.cfg.target_base_height,
+            },
+        }
