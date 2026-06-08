@@ -1,0 +1,124 @@
+--- git commit ---
+8cb1d41d3e40250205587e9190591d17bcaf0df6
+
+
+--- git status ---
+On branch master
+Your branch is ahead of 'origin/master' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env.cpython-311.pyc
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/__pycache__/rsl_rl_ppo_cfg.cpython-311.pyc
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/rsl_rl_ppo_cfg.py
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env.py
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-06-06_10-38-12/
+	scripts/rsl_rl/logs/rsl_rl/cartpole_direct/2026-06-06_10-52-04/
+	scripts/rsl_rl/outputs/2026-06-06/
+	source/phantomx_thesis/build/
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env.cpython-311.pyc b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env.cpython-311.pyc
+index 3dcbf0b..495d687 100644
+Binary files a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env.cpython-311.pyc and b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env.cpython-311.pyc differ
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc
+index b5b87c0..af80e6f 100644
+Binary files a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc and b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc differ
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/__pycache__/rsl_rl_ppo_cfg.cpython-311.pyc b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/__pycache__/rsl_rl_ppo_cfg.cpython-311.pyc
+index 78f3bc9..9bb9da8 100644
+Binary files a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/__pycache__/rsl_rl_ppo_cfg.cpython-311.pyc and b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/__pycache__/rsl_rl_ppo_cfg.cpython-311.pyc differ
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/rsl_rl_ppo_cfg.py b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/rsl_rl_ppo_cfg.py
+index 6ec4fdb..529b00f 100644
+--- a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/rsl_rl_ppo_cfg.py
++++ b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/rsl_rl_ppo_cfg.py
+@@ -10,7 +10,7 @@ from isaaclab_rl.rsl_rl import RslRlOnPolicyRunnerCfg, RslRlPpoActorCriticCfg, R
+ 
+ @configclass
+ class PPORunnerCfg(RslRlOnPolicyRunnerCfg):
+-    num_steps_per_env = 24
++    num_steps_per_env = 96      #default:24
+     max_iterations = 10000
+     save_interval = 50
+     experiment_name = "cartpole_direct"
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env.py b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env.py
+index 215ff0a..c60f595 100644
+--- a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env.py
++++ b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env.py
+@@ -51,7 +51,12 @@ class PhantomxThesisEnv(DirectRLEnv):
+     # ---------------------------------------------------------------------
+ 
+     def _pre_physics_step(self, actions: torch.Tensor):
+-        self.actions = actions.clone().clamp(-1.0, 1.0)
++        raw_actions = actions.clone().clamp(-1.0, 1.0)
++        
++        # Exponential Moving Average
++        alpha = 0.5
++        self.actions = alpha * raw_actions + (1 - alpha) * self.prev_actions
++        
+         targets = self.joint_default_pos + self.cfg.action_scale * self.actions
+         self.robot.set_joint_position_target(targets, joint_ids=self._joint_dof_idx)
+ 
+@@ -147,7 +152,7 @@ class PhantomxThesisEnv(DirectRLEnv):
+         Zur Inferenz einfach self.commands direkt überschreiben:
+             env.commands[:, 0] = msg.linear.x
+             env.commands[:, 1] = msg.linear.y
+-            env.commands[:, 2] = msg.angular.z
++            env.commands[:, 2] = msg.angular.za
+         """
+         n = len(env_ids)
+         self.commands[env_ids, 0] = torch.empty(n, device=self.device).uniform_(*self.cfg.commands.lin_vel_x)
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
+index dd8d9fc..e8716ba 100644
+--- a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
++++ b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
+@@ -43,6 +43,31 @@ class EventCfg:
+         },
+     )
+ 
++    # NEU: Zufällige Kraftstöße
++    push_robot = EventTerm(
++        func=mdp.push_by_setting_velocity,
++        mode="interval",
++        interval_range_s=(5.0, 10.0),
++        params={
++            "asset_cfg": SceneEntityCfg("robot"),
++            "velocity_range": {
++                "x": (-0.3, 0.3),
++                "y": (-0.3, 0.3),
++            },
++        },
++    )
++
++    # NEU: Gelenkdämpfung randomisieren
++    randomize_joint_friction = EventTerm(
++        func=mdp.randomize_joint_parameters,
++        mode="startup",
++        params={
++            "asset_cfg": SceneEntityCfg("robot", joint_names=".*"),
++            "friction_distribution_params": (0.0, 0.02),
++            "operation": "add",
++        },
++    )
++
+ 
+ @configclass
+ class CommandRanges:
+@@ -146,7 +171,7 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
+     ang_vel_reward_scale        =  -5.0
+     joint_torque_reward_scale   =  -2e-5
+     joint_accel_reward_scale    =  -2.5e-7
+-    action_rate_reward_scale    =  -0.02
++    action_rate_reward_scale    =  -0.1
+     flat_orientation_reward_scale = -3.0
+     movement_penalty_scale      =  10.0
+     alive_reward_scale          =   0.3
