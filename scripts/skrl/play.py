@@ -14,6 +14,7 @@ a more user-friendly way.
 
 import argparse
 import sys
+from unittest import runner
 
 from isaaclab.app import AppLauncher
 
@@ -53,7 +54,7 @@ parser.add_argument(
     "--algorithm",
     type=str,
     default="PPO",
-    choices=["AMP", "PPO", "IPPO", "MAPPO"],
+    choices=["AMP", "PPO", "IPPO", "MAPPO", "SAC"],
     help="The RL algorithm used for training the skrl agent.",
 )
 parser.add_argument("--real-time", action="store_true", default=False, help="Run in real-time, if possible.")
@@ -207,7 +208,8 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, expe
     print(f"[INFO] Loading model checkpoint from: {resume_path}")
     runner.agent.load(resume_path)
     # set agent to evaluation mode
-    runner.agent.set_running_mode("eval")
+    # runner.agent.set_running_mode("eval")     auskommentiert von Felix am 09.06.2026
+    runner.agent.training = False
 
     # reset environment
     obs, _ = env.reset()
@@ -218,8 +220,11 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, expe
 
         # run everything in inference mode
         with torch.inference_mode():
+
+            print(type(obs), obs.keys() if hasattr(obs, 'keys') else obs.shape)
+            # outputs = runner.agent.act(obs, timestep=0, timesteps=0)
             # agent stepping
-            outputs = runner.agent.act(obs, timestep=0, timesteps=0)
+            outputs = runner.agent.act(obs, None, timestep=0, timesteps=0)
             # - multi-agent (deterministic) actions
             if hasattr(env, "possible_agents"):
                 actions = {a: outputs[-1][a].get("mean_actions", outputs[0][a]) for a in env.possible_agents}

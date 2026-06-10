@@ -13,9 +13,77 @@ from isaaclab.managers import SceneEntityCfg
 from isaaclab.scene import InteractiveSceneCfg
 from isaaclab.sim import SimulationCfg
 from isaaclab.terrains import TerrainImporterCfg
+from isaaclab.terrains import TerrainGeneratorCfg
+import isaaclab.terrains.trimesh.mesh_terrains_cfg as mesh_gen
+import isaaclab.terrains.height_field.hf_terrains_cfg as hf_gen
 from isaaclab.utils import configclass
 from isaaclab.sensors import ContactSensorCfg
 from isaaclab_assets.robots.phantomx import PHANTOMX_CFG  # isort: skip
+
+
+# =====================================================
+# TERRAIN CONFIGURATION
+# =====================================================
+# Unstrukturiertes Terrain aus mehreren Sub-Terrain-Typen.
+# Jeder Typ hat eine 'proportion' (Anteil am Gesamtterrain).
+# 'curriculum=True' bedeutet: leichtere Terrains zuerst,
+# der Roboter wird nach Performance auf schwierigere versetzt.
+
+ROUGH_TERRAINS_CFG = TerrainGeneratorCfg(
+    seed=42,
+    size=(8.0, 8.0),            # Größe jedes Sub-Terrains in Metern
+    border_width=20.0,          # Breiter Rand damit Roboter nicht rausfällt
+    num_rows=10,                # Anzahl Terrain-Reihen (Difficulty-Levels)
+    num_cols=20,                # Anzahl Terrain-Spalten (Variationen pro Level)
+    horizontal_scale=0.1,       # Auflösung des Height-Fields (m/pixel)
+    vertical_scale=0.005,       # Vertikale Skalierung (m/unit)
+    slope_threshold=0.75,       # Max Steigung bevor Terrain als Wand gilt
+    difficulty_range=(0.0, 1.0),
+    use_cache=False,
+    curriculum=True,            # Curriculum: einfach → schwer
+    sub_terrains={
+        # Flaches Terrain als Einstieg (20%)
+        "flat": mesh_gen.MeshPlaneTerrainCfg(
+            proportion=0.2,
+        ),
+        # Zufälliges Rauschen - leicht uneben (20%)
+        # Gut für Hexapod: simuliert Gras/Kies/unebenen Boden
+        "random_rough": hf_gen.HfRandomUniformTerrainCfg(
+            proportion=0.2,
+            noise_range=(0.02, 0.08),   # Höhe der Unebenheiten in Metern
+            noise_step=0.02,
+            border_width=0.25,
+        ),
+        # Diskrete Hindernisse - Klötze/Steine (20%)
+        # Herausfordernd für Hexapod: Beine müssen hochheben
+        "discrete_obstacles": hf_gen.HfDiscreteObstaclesTerrainCfg(
+            proportion=0.2,
+            obstacle_height_mode="fixed",
+            obstacle_width_range=(0.05, 0.2),   # Breite der Hindernisse
+            obstacle_height_range=(0.02, 0.06), # Höhe: konservativ für Hexapod
+            num_obstacles=60,
+            platform_width=2.0,
+        ),
+        # Geneigte Pyramide (20%)
+        # Trainiert Gleichgewicht auf Schrägen
+        "pyramid_slope": hf_gen.HfPyramidSlopedTerrainCfg(
+            proportion=0.2,
+            slope_range=(0.0, 0.3),     # Neigungswinkel in rad (0.3 ≈ 17°)
+            platform_width=2.0,
+            border_width=0.25,
+        ),
+        # Treppenstufen (20%)
+        # Schwierigste Variante - Beine müssen klar heben
+        "pyramid_stairs": mesh_gen.MeshPyramidStairsTerrainCfg(
+            proportion=0.2,
+            step_height_range=(0.02, 0.08), # Stufenhöhe: klein für Hexapod
+            step_width=0.3,
+            platform_width=3.0,
+            border_width=1.0,
+            holes=False,
+        ),
+    },
+)
 
 
 @configclass
@@ -26,23 +94,22 @@ class EventCfg:
         mode="startup",
         params={
             "asset_cfg": SceneEntityCfg("robot", body_names=".*"),
-            "static_friction_range": (0.7, 1.0),  # 🔧 Mehr Variation für Robustheit
+            "static_friction_range": (0.7, 1.0),
             "dynamic_friction_range": (0.5, 0.8),
             "restitution_range": (0.0, 0.0),
             "num_buckets": 64,
         },
     )
-    
+
     add_base_mass = EventTerm(
         func=mdp.randomize_rigid_body_mass,
         mode="startup",
         params={
             "asset_cfg": SceneEntityCfg("robot", body_names="MP_BODY"),
-            "mass_distribution_params": (-0.5, 0.5),  # 🔧 Kleinere Variation am Anfang
+            "mass_distribution_params": (-0.5, 0.5),
             "operation": "add",
         },
     )
-    
 
 
 @configclass
@@ -52,16 +119,16 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
     # =====================================================
     episode_length_s = 40.0
     decimation = 4
-    action_scale = 0.5  # 🔧 Reduziert von 1.0 - kleinere Actions für Stabilität
+    action_scale = 0.5
     action_space = 18  # PhantomX: 6 legs × 3 joints = 18 DOF
-    
-    # Observation space: 
+
+    # Observation space:
     #   root_lin_vel_b (3) + root_ang_vel_b (3) + projected_gravity_b (3)
     #   + commands (3) + joint_pos_offset (18) + joint_vel (18) + actions (18)
     #   Total = 66
     observation_space = 66
     state_space = 0
-    
+
     obs_groups = {
         "actor": "policy",
         "critic": "policy",
@@ -81,10 +148,14 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
             restitution=0.0,
         ),
     )
-    
+
+    # =====================================================
+    # TERRAIN - Unstrukturiertes Rough Terrain
+    # =====================================================
     terrain = TerrainImporterCfg(
         prim_path="/World/ground",
-        terrain_type="plane",
+        terrain_type="generator",           # "generator" statt "plane"
+        terrain_generator=ROUGH_TERRAINS_CFG,
         collision_group=-1,
         physics_material=sim_utils.RigidBodyMaterialCfg(
             friction_combine_mode="multiply",
@@ -93,9 +164,13 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
             dynamic_friction=1.0,
             restitution=0.0,
         ),
+        visual_material=sim_utils.MdlFileCfg(
+            mdl_path="{NVIDIA_NUCLEUS_DIR}/Materials/Base/Architecture/Shingles_01.mdl",
+            project_uvw=True,
+        ),
         debug_vis=False,
     )
-    
+
     contact_sensor: ContactSensorCfg = ContactSensorCfg(
         prim_path="/World/envs/env_.*/Robot/.*",
         history_length=5,
@@ -107,9 +182,9 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
     # SCENE
     # =====================================================
     scene: InteractiveSceneCfg = InteractiveSceneCfg(
-        num_envs=200, 
-        env_spacing=2.5, 
-        replicate_physics=True
+        num_envs=200,
+        env_spacing=8.0,    # Erhöht von 2.5 auf 8.0 wegen Terrain-Größe (8x8m)
+        replicate_physics=True,
     )
 
     # =====================================================
@@ -122,37 +197,33 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
     # =====================================================
     robot: ArticulationCfg = PHANTOMX_CFG.replace(prim_path="/World/envs/env_.*/Robot")
     target_base_height = 0.10    # 120 mm
-    movement_speed_x = 0.10   # 10 cm/s
-    yaw_rotation_speed_x = 0.0   # 0 rad/s 
-    
+    movement_speed_x = 0.10      # 10 cm/s
+    yaw_rotation_speed_x = 0.0   # 0 rad/s
 
     # =====================================================
     # REWARD SCALES - TUNED FOR HEXAPOD LOCOMOTION
     # =====================================================
     # 🎯 TRACKING REWARDS (positive)
-    lin_vel_reward_scale = 10.0      
-    yaw_rate_reward_scale = 4.0     # 🔧 Reduced from 1.0 - yaw weniger wichtig
+    lin_vel_reward_scale = 10.0
+    yaw_rate_reward_scale = 4.0
 
-    height_reward_scale = 0.1   # Stärke des Rewards (tunable)
-    
-    
+    height_reward_scale = 0.1
+
     # 🚫 PENALTIES (negative)
-    z_vel_reward_scale = -2.0       # Bleib flach
-    ang_vel_reward_scale = -5      # Kein Roll/Pitch
-    joint_torque_reward_scale = -2e-5   # 🔧 Leicht erhöht - energie-effizienz wichtiger
-    joint_accel_reward_scale = -2.5e-7  # 🔧 Erhöht - sanfte Bewegungen fördern
-    action_rate_reward_scale = -0.02    # Keine ruckartigen Actions
-    flat_orientation_reward_scale = -3.0  # 🔧 Reduced from -5.0 - zu harsh
+    z_vel_reward_scale = -2.0
+    ang_vel_reward_scale = -5
+    joint_torque_reward_scale = -2e-5
+    joint_accel_reward_scale = -2.5e-7
+    action_rate_reward_scale = -0.02
+    flat_orientation_reward_scale = -3.0
 
     movement_penalty_scale = 10.0
-    
+
     # 🆕 SURVIVAL REWARD (critical!)
-    alive_reward_scale = 0.3  # Konstante Belohnung fürs Überleben
-    
+    alive_reward_scale = 0.3
+
     # =====================================================
     # TERMINATION THRESHOLDS - RELAXED FOR LEARNING
     # =====================================================
-
     termination_height = 0.03
-
     termination_tilt = 0.5

@@ -1,0 +1,95 @@
+seed: 42
+
+models:
+  separate: True  # SAC braucht immer separate Modelle
+  policy:
+    class: GaussianMixin
+    clip_actions: False        # wichtig bei SAC — tanh squashing ->geändert auf False am 09.06.2026
+    clip_log_std: True
+    min_log_std: -20.0
+    max_log_std: 2.0
+    initial_log_std: 0.0
+    network:
+      - name: net
+        input: OBSERVATIONS
+        layers: [128, 128]
+        activations: elu
+    output: ACTIONS
+
+  critic_1:
+    class: DeterministicMixin
+    clip_actions: False
+    # clip_actions: True        # wichtig bei SAC — tanh squashing ->alle 3 geändert am 09.06.2026 (auch auskommentiert von clip_action=false)
+    network:
+      - name: net
+        input: concatenate([OBSERVATIONS, ACTIONS])
+        layers: [128, 128]
+        activations: elu
+    output: ONE
+
+  critic_2:
+    class: DeterministicMixin
+    clip_actions: False
+    # clip_actions: True        # wichtig bei SAC — tanh squashing
+    network:
+      - name: net
+        input: concatenate([OBSERVATIONS, ACTIONS])
+        layers: [128, 128]
+        activations: elu
+    output: ONE
+
+  target_critic_1:
+    class: DeterministicMixin
+    clip_actions: False
+    # clip_actions: True        # wichtig bei SAC — tanh squashing
+    network:
+      - name: net
+        input: concatenate([OBSERVATIONS, ACTIONS])
+        layers: [128, 128]
+        activations: elu
+    output: ONE
+
+  target_critic_2:
+    class: DeterministicMixin
+    clip_actions: False
+    network:
+      - name: net
+        input: concatenate([OBSERVATIONS, ACTIONS])
+        layers: [128, 128]
+        activations: elu
+    output: ONE
+
+memory:
+  class: RandomMemory
+  memory_size: 100000    # Replay Buffer Größe
+
+agent:
+  class: SAC
+  gradient_steps: 1
+  batch_size: 4096
+  discount_factor: 0.99
+  polyak: 0.005
+  learning_rate: 3.0e-4
+  learning_rate_scheduler: null
+  learning_rate_scheduler_kwargs: {}
+  observation_preprocessor: RunningStandardScaler
+  observation_preprocessor_kwargs: null
+  state_preprocessor: RunningStandardScaler
+  state_preprocessor_kwargs: null
+  random_timesteps: 10000
+  learning_starts: 10000
+  grad_norm_clip: 0.0
+  learn_entropy: True
+  initial_entropy_value: 0.2
+  target_entropy: null
+  mixed_precision: False
+  experiment:
+    directory: "phantomx_sac"
+    experiment_name: ""
+    write_interval: auto
+    checkpoint_interval: auto
+
+trainer:
+  class: SequentialTrainer
+  timesteps: 1000000
+  environment_info: log
