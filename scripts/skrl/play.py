@@ -116,6 +116,21 @@ from isaaclab_tasks.utils.hydra import hydra_task_config
 
 import phantomx_thesis.tasks  # noqa: F401
 
+# If an explicit checkpoint is given but no algorithm was specified, auto-detect from the
+# checkpoint's saved params/agent.yaml so the correct model architecture is loaded.
+if args_cli.checkpoint and args_cli.algorithm == "PPO" and args_cli.agent is None:
+    import yaml as _yaml
+    _params_yaml = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(args_cli.checkpoint))),
+        "params", "agent.yaml",
+    )
+    if os.path.exists(_params_yaml):
+        with open(_params_yaml) as _f:
+            _saved_class = _yaml.safe_load(_f).get("agent", {}).get("class", "PPO").upper()
+        if _saved_class != "PPO":
+            print(f"[INFO] Auto-detected algorithm '{_saved_class}' from checkpoint params. Overriding --algorithm.")
+            args_cli.algorithm = _saved_class
+
 # config shortcuts
 if args_cli.agent is None:
     algorithm = args_cli.algorithm.lower()
@@ -208,7 +223,7 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, expe
     print(f"[INFO] Loading model checkpoint from: {resume_path}")
     runner.agent.load(resume_path)
     # set agent to evaluation mode
-    # runner.agent.set_running_mode("eval")     auskommentiert von Felix am 09.06.2026
+    # runner.agent.set_running_mode("eval")
     runner.agent.training = False
 
     # reset environment
@@ -221,10 +236,8 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, expe
         # run everything in inference mode
         with torch.inference_mode():
 
-            print(type(obs), obs.keys() if hasattr(obs, 'keys') else obs.shape)
-            # outputs = runner.agent.act(obs, timestep=0, timesteps=0)
             # agent stepping
-            outputs = runner.agent.act(obs, None, timestep=0, timesteps=0)
+            outputs = runner.agent.act(obs, None, timestep=timestep, timesteps=timestep)
             # - multi-agent (deterministic) actions
             if hasattr(env, "possible_agents"):
                 actions = {a: outputs[-1][a].get("mean_actions", outputs[0][a]) for a in env.possible_agents}
@@ -233,11 +246,9 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, expe
                 actions = outputs[-1].get("mean_actions", outputs[0])
             # env stepping
             obs, _, _, _, _ = env.step(actions)
-        if args_cli.video:
-            timestep += 1
-            # exit the play loop after recording one video
-            if timestep == args_cli.video_length:
-                break
+        timestep += 1
+        if args_cli.video and timestep == args_cli.video_length:
+            break
 
         # time delay for real-time evaluation
         sleep_time = dt - (time.time() - start_time)

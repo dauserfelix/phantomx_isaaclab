@@ -13,8 +13,7 @@ class PPORunnerCfg(RslRlOnPolicyRunnerCfg):
     num_steps_per_env = 96      #default:24
     max_iterations = 10000
     save_interval = 50
-    experiment_name = "cartpole_direct"
-    # experiment_name = "phantomx_thesis_direct_ppo"
+    experiment_name = "phantomx_thesis_direct_ppo"
     policy = RslRlPpoActorCriticCfg(
         init_noise_std=1.0,
         actor_obs_normalization=False,

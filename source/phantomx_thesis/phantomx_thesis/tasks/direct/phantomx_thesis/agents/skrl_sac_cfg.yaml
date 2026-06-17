@@ -61,7 +61,7 @@ models:
 
 memory:
   class: RandomMemory
-  memory_size: 100000    # Replay Buffer Größe
+  memory_size: 25000    # Replay Buffer Größe (memory = memory_size × num_envs × obs × 4 bytes)
 
 agent:
   class: SAC

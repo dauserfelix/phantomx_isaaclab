@@ -4,6 +4,8 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
+import os
+
 import isaaclab.envs.mdp as mdp
 import isaaclab.sim as sim_utils
 from isaaclab.assets import ArticulationCfg
@@ -19,7 +21,7 @@ import isaaclab.terrains.height_field.hf_terrains_cfg as hf_gen
 from isaaclab.utils import configclass
 from isaaclab.sensors import ContactSensorCfg
 from isaaclab_assets.robots.phantomx import PHANTOMX_CFG  # isort: skip
-
+from isaaclab.actuators import IdealPDActuatorCfg
 
 # =====================================================
 # TERRAIN CONFIGURATION
@@ -29,61 +31,63 @@ from isaaclab_assets.robots.phantomx import PHANTOMX_CFG  # isort: skip
 # 'curriculum=True' bedeutet: leichtere Terrains zuerst,
 # der Roboter wird nach Performance auf schwierigere versetzt.
 
-ROUGH_TERRAINS_CFG = TerrainGeneratorCfg(
-    seed=42,
-    size=(8.0, 8.0),            # Größe jedes Sub-Terrains in Metern
-    border_width=20.0,          # Breiter Rand damit Roboter nicht rausfällt
-    num_rows=10,                # Anzahl Terrain-Reihen (Difficulty-Levels)
-    num_cols=20,                # Anzahl Terrain-Spalten (Variationen pro Level)
-    horizontal_scale=0.1,       # Auflösung des Height-Fields (m/pixel)
-    vertical_scale=0.005,       # Vertikale Skalierung (m/unit)
-    slope_threshold=0.75,       # Max Steigung bevor Terrain als Wand gilt
-    difficulty_range=(0.0, 1.0),
-    use_cache=False,
-    curriculum=True,            # Curriculum: einfach → schwer
-    sub_terrains={
-        # Flaches Terrain als Einstieg (20%)
-        "flat": mesh_gen.MeshPlaneTerrainCfg(
-            proportion=0.2,
-        ),
-        # Zufälliges Rauschen - leicht uneben (20%)
-        # Gut für Hexapod: simuliert Gras/Kies/unebenen Boden
-        "random_rough": hf_gen.HfRandomUniformTerrainCfg(
-            proportion=0.2,
-            noise_range=(0.02, 0.08),   # Höhe der Unebenheiten in Metern
-            noise_step=0.02,
-            border_width=0.25,
-        ),
-        # Diskrete Hindernisse - Klötze/Steine (20%)
-        # Herausfordernd für Hexapod: Beine müssen hochheben
-        "discrete_obstacles": hf_gen.HfDiscreteObstaclesTerrainCfg(
-            proportion=0.2,
-            obstacle_height_mode="fixed",
-            obstacle_width_range=(0.05, 0.2),   # Breite der Hindernisse
-            obstacle_height_range=(0.02, 0.06), # Höhe: konservativ für Hexapod
-            num_obstacles=60,
-            platform_width=2.0,
-        ),
-        # Geneigte Pyramide (20%)
-        # Trainiert Gleichgewicht auf Schrägen
-        "pyramid_slope": hf_gen.HfPyramidSlopedTerrainCfg(
-            proportion=0.2,
-            slope_range=(0.0, 0.3),     # Neigungswinkel in rad (0.3 ≈ 17°)
-            platform_width=2.0,
-            border_width=0.25,
-        ),
-        # Treppenstufen (20%)
-        # Schwierigste Variante - Beine müssen klar heben
-        "pyramid_stairs": mesh_gen.MeshPyramidStairsTerrainCfg(
-            proportion=0.2,
-            step_height_range=(0.02, 0.08), # Stufenhöhe: klein für Hexapod
-            step_width=0.3,
-            platform_width=3.0,
-            border_width=1.0,
-            holes=False,
-        ),
-    },
-)
+# ROUGH_TERRAINS_CFG = TerrainGeneratorCfg(
+#     seed=42,
+#     size=(8.0, 8.0),            # Größe jedes Sub-Terrains in Metern
+#     border_width=0.5,          # Breiter Rand damit Roboter nicht rausfällt
+#     num_rows=30,                # Anzahl Terrain-Reihen (Difficulty-Levels)
+#     num_cols=32,                # Anzahl Terrain-Spalten (Variationen pro Level)
+#     horizontal_scale=0.1,       # Auflösung des Height-Fields (m/pixel)
+#     vertical_scale=0.005,       # Vertikale Skalierung (m/unit)
+#     slope_threshold=0.75,       # Max Steigung bevor Terrain als Wand gilt
+#     difficulty_range=(0.0, 1.0),
+#     use_cache=False,
+#     curriculum=False,            # Curriculum: einfach → schwer
+#     sub_terrains={
+#         # Flaches Terrain als Einstieg (20%)
+#         "flat": mesh_gen.MeshPlaneTerrainCfg(
+#             proportion=0.2,
+#         ),
+#         # Zufälliges Rauschen - leicht uneben (20%)
+#         # Gut für Hexapod: simuliert Gras/Kies/unebenen Boden
+#         "random_rough": hf_gen.HfRandomUniformTerrainCfg(
+#             proportion=0.2,
+#             noise_range=(0.02, 0.08),   # Höhe der Unebenheiten in Metern
+#             noise_step=0.02,
+#             border_width=0.25,
+#         ),
+#         # Diskrete Hindernisse - Klötze/Steine (20%)
+#         # Herausfordernd für Hexapod: Beine müssen hochheben
+#         "discrete_obstacles": hf_gen.HfDiscreteObstaclesTerrainCfg(
+#             proportion=0.2,
+#             obstacle_height_mode="fixed",
+#             obstacle_width_range=(0.05, 0.2),   # Breite der Hindernisse
+#             obstacle_height_range=(0.02, 0.06), # Höhe: konservativ für Hexapod
+#             num_obstacles=60,
+#             platform_width=2.0,
+#         ),
+#         # Geneigte Pyramide (20%)
+#         # Trainiert Gleichgewicht auf Schrägen
+#         "pyramid_slope": hf_gen.HfPyramidSlopedTerrainCfg(
+#             proportion=0.2,
+#             slope_range=(0.0, 0.3),     # Neigungswinkel in rad (0.3 ≈ 17°)
+#             platform_width=2.0,
+#             border_width=0.25,
+#         ),
+#         # Treppenstufen (20%)
+#         # Schwierigste Variante - Beine müssen klar heben
+#         "pyramid_stairs": mesh_gen.MeshPyramidStairsTerrainCfg(
+#             proportion=0.2,
+#             step_height_range=(0.02, 0.08), # Stufenhöhe: klein für Hexapod
+#             step_width=0.3,
+#             platform_width=3.0,
+#             border_width=1.0,
+#             holes=False,
+#         ),
+#     },
+# )
+
+
 
 
 @configclass
@@ -119,14 +123,16 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
     # =====================================================
     episode_length_s = 40.0
     decimation = 4
-    action_scale = 0.5
+    action_scale = 0.3        # CPG liefert Grundgang, Policy korrigiert nur ±0.3 rad (≈ ±17°)
+    joint_pos_limit: float = 0.5235  # ±30° um Default-Stellung (π/6) — verhindert mechanisch gefährliche Posen
     action_space = 18  # PhantomX: 6 legs × 3 joints = 18 DOF
 
     # Observation space:
     #   root_lin_vel_b (3) + root_ang_vel_b (3) + projected_gravity_b (3)
     #   + commands (3) + joint_pos_offset (18) + joint_vel (18) + actions (18)
-    #   Total = 66
-    observation_space = 66
+    #   + cpg_phase sin/cos (2)
+    #   Total = 68
+    observation_space = 68
     state_space = 0
 
     obs_groups = {
@@ -152,24 +158,39 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
     # =====================================================
     # TERRAIN - Unstrukturiertes Rough Terrain
     # =====================================================
+    # terrain = TerrainImporterCfg(
+    #     prim_path="/World/ground",
+    #     terrain_type="generator",           # "generator" statt "plane"
+    #     terrain_generator=ROUGH_TERRAINS_CFG,
+    #     collision_group=-1,
+    #     physics_material=sim_utils.RigidBodyMaterialCfg(
+    #         friction_combine_mode="multiply",
+    #         restitution_combine_mode="multiply",
+    #         static_friction=1.0,
+    #         dynamic_friction=1.0,
+    #         restitution=0.0,
+    #     ),
+    #     visual_material=sim_utils.MdlFileCfg(
+    #         mdl_path="{NVIDIA_NUCLEUS_DIR}/Materials/Base/Architecture/Shingles_01.mdl",
+    #         project_uvw=True,
+    #     ),
+    #     debug_vis=False,
+    # )
+
     terrain = TerrainImporterCfg(
-        prim_path="/World/ground",
-        terrain_type="generator",           # "generator" statt "plane"
-        terrain_generator=ROUGH_TERRAINS_CFG,
-        collision_group=-1,
-        physics_material=sim_utils.RigidBodyMaterialCfg(
-            friction_combine_mode="multiply",
-            restitution_combine_mode="multiply",
-            static_friction=1.0,
-            dynamic_friction=1.0,
-            restitution=0.0,
-        ),
-        visual_material=sim_utils.MdlFileCfg(
-            mdl_path="{NVIDIA_NUCLEUS_DIR}/Materials/Base/Architecture/Shingles_01.mdl",
-            project_uvw=True,
-        ),
-        debug_vis=False,
-    )
+    prim_path="/World/ground",
+    terrain_type="plane",
+    collision_group=-1,
+    physics_material=sim_utils.RigidBodyMaterialCfg(
+        friction_combine_mode="multiply",
+        restitution_combine_mode="multiply",
+        static_friction=1.0,
+        dynamic_friction=1.0,
+        restitution=0.0,
+    ),
+
+    debug_vis=False,
+)
 
     contact_sensor: ContactSensorCfg = ContactSensorCfg(
         prim_path="/World/envs/env_.*/Robot/.*",
@@ -182,8 +203,8 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
     # SCENE
     # =====================================================
     scene: InteractiveSceneCfg = InteractiveSceneCfg(
-        num_envs=200,
-        env_spacing=8.0,    # Erhöht von 2.5 auf 8.0 wegen Terrain-Größe (8x8m)
+        num_envs=512,
+        env_spacing=3.0,    # Erhöht von 2.5 auf 8.0 wegen Terrain-Größe (8x8m)
         replicate_physics=True,
     )
 
@@ -195,19 +216,35 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
     # =====================================================
     # ROBOT Movement Params
     # =====================================================
-    robot: ArticulationCfg = PHANTOMX_CFG.replace(prim_path="/World/envs/env_.*/Robot")
+    robot: ArticulationCfg = PHANTOMX_CFG.replace(prim_path="/World/envs/env_.*/Robot").replace(
+        actuators={
+            "all_joints": IdealPDActuatorCfg(
+                joint_names_expr=[".*"],
+                # AX-12 bei 12V (linear extrapoliert aus 7V/10V-Datenpunkten):
+                #   Haltemoment: 19.5 kgf·cm = 1.912 Nm
+                #   Leerlaufgeschw.: 0.1473 s/60° = 7.11 rad/s (67.9 RPM)
+                # Zur Laufzeit überschreibt die Motor-Strength-Curriculum diese Werte:
+                #   stiffness: 25.0 → 10.0 Nm/rad
+                #   effort_limit: 3.82 → 1.91 Nm  (über 300k Steps)
+                effort_limit=1.912,     # Nm — AX-12 bei 12V (realistischer Endwert)
+                velocity_limit=7.11,    # rad/s — AX-12 bei 12V
+                stiffness=8.0,          # Nm/rad — fest; saturiert bei 1.912/8 = 0.24 rad Fehler
+                damping=0.5,            # Nm/(rad/s) — saturiert bei 1.912/0.5 = 3.82 rad/s
+            )
+        }
+    )
     target_base_height = 0.10    # 120 mm
-    movement_speed_x = 0.10      # 10 cm/s
+    movement_speed_x = 0.05      # 10 cm/s
     yaw_rotation_speed_x = 0.0   # 0 rad/s
 
     # =====================================================
     # REWARD SCALES - TUNED FOR HEXAPOD LOCOMOTION
     # =====================================================
-    # 🎯 TRACKING REWARDS (positive)
+    #🎯 TRACKING REWARDS (positive)
     lin_vel_reward_scale = 10.0
     yaw_rate_reward_scale = 4.0
 
-    height_reward_scale = 0.1
+    height_reward_scale = 5.0
 
     # 🚫 PENALTIES (negative)
     z_vel_reward_scale = -2.0
@@ -222,8 +259,53 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
     # 🆕 SURVIVAL REWARD (critical!)
     alive_reward_scale = 0.3
 
+    # 🦿 FOOT CONTACT REWARD — Bonus für stabile Stützbasis (≥3 Beine am Boden)
+    foot_contact_reward_scale = 1.0
+
+    # =====================================================
+    # CPG — Central Pattern Generator (Tripod-Gang)
+    # =====================================================
+    cpg_freq: float = 1.5      # Hz  — Gangfrequenz
+    cpg_A_coxa: float = 0.3   # rad — Coxa Vor/Rück-Schwung (≈ 17°)
+    cpg_A_femur: float = 0.2  # rad — Femur Bein-Hub (≈ 11°)
+    cpg_A_tibia: float = 0.1  # rad — Tibia Knie-Folge (≈ 6°)
+
+    # # =====================================================
+    # # Optuna Hyperparameter Tuning - Werte werden per Environment Variable gesetzt bzw angepasst (10.06.2025)
+    # # =====================================================
+    # # =====================================================
+    # # PRIMÄRE REWARDS — hardcoded, Optuna darf nicht ändern
+    # # =====================================================
+    # lin_vel_reward_scale: float = 15.0      # hoch und fest — Roboter MUSS laufen
+    # alive_reward_scale: float = 0.5         # moderat und fest
+    # height_reward_scale: float = 2.0        # fest — wichtig für Stabilität
+    # yaw_rate_reward_scale: float = 4.0      # fest
+
+    # # =====================================================
+    # # PENALTIES — hardcoded auf sichere Werte
+    # # =====================================================
+    # movement_penalty_scale: float = 0.0     # deaktiviert — lin_vel reicht
+    # z_vel_reward_scale: float = -2.0        # fest
+    # joint_accel_reward_scale: float = -2.5e-7  # fest
+
+    # # =====================================================
+    # # SEKUNDÄRE REWARDS — Optuna optimiert WIE der Roboter läuft
+    # # =====================================================
+    # flat_orientation_reward_scale: float = float(
+    #     os.environ.get("OPTUNA_ORIENTATION_SCALE", "-3.0")
+    # )
+    # joint_torque_reward_scale: float = float(
+    #     os.environ.get("OPTUNA_TORQUE_SCALE", "-2e-5")
+    # )
+    # action_rate_reward_scale: float = float(
+    #     os.environ.get("OPTUNA_ACTION_RATE_SCALE", "-0.02")
+    # )
+    # ang_vel_reward_scale: float = float(
+    #     os.environ.get("OPTUNA_ANG_VEL_SCALE", "-5.0")
+    # )
+
     # =====================================================
     # TERMINATION THRESHOLDS - RELAXED FOR LEARNING
     # =====================================================
-    termination_height = 0.03
+    termination_height = 0.02
     termination_tilt = 0.5
