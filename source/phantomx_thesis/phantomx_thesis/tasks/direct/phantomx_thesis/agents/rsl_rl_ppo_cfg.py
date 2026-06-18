@@ -16,10 +16,11 @@ class PPORunnerCfg(RslRlOnPolicyRunnerCfg):
     experiment_name = "phantomx_thesis_direct_ppo"
     policy = RslRlPpoActorCriticCfg(
         init_noise_std=1.0,
-        actor_obs_normalization=False,
-        critic_obs_normalization=False,
+        noise_std_type="log",       # exp(log_std) is always > 0 — prevents negative-std crash
+        actor_obs_normalization=True,
+        critic_obs_normalization=True,
         # actor_hidden_dims=[32, 32],  ->Default
-        # critic_hidden_dims=[32, 32],  ->Default, 
+        # critic_hidden_dims=[32, 32],  ->Default,
         actor_hidden_dims=[128, 128],
         critic_hidden_dims=[128, 128],
         activation="elu",
@@ -28,7 +29,7 @@ class PPORunnerCfg(RslRlOnPolicyRunnerCfg):
         value_loss_coef=1.0,
         use_clipped_value_loss=True,
         clip_param=0.2,
-        entropy_coef=0.005,
+        entropy_coef=0.001,
         num_learning_epochs=5,
         num_mini_batches=4,
         learning_rate=1.0e-3,

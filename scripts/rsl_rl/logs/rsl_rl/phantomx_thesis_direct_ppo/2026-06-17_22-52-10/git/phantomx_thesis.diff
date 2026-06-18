@@ -1,0 +1,601 @@
+--- git commit ---
+5ad93ba258174fe9e576fb693209c07fa077e455
+
+
+--- git status ---
+On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/events.out.tfevents.1781688310.chp-MS-7E80.5763.0
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env.cpython-311.pyc
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/__pycache__/rsl_rl_ppo_cfg.cpython-311.pyc
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/rsl_rl_ppo_cfg.py
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env.py
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/exported/
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_100.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_1000.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_1050.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_1100.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_1150.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_1200.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_1250.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_1300.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_1350.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_1400.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_1450.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_150.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_1500.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_1550.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_1600.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_1650.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_1700.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_1750.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_1800.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_1850.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_1900.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_1950.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_200.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_2000.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_2050.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_2100.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_2150.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_2200.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_2250.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_2300.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_2350.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_2400.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_2450.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_250.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_2500.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_2550.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_2600.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_2650.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_2700.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_2750.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_2800.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_2850.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_2900.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_2950.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_300.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_3000.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_3050.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_3100.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_3150.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_3200.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_3250.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_3300.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_3350.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_3400.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_3450.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_350.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_3500.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_3550.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_3600.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_3650.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_3700.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_3750.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_3800.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_3850.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_3900.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_3950.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_400.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_4000.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_4050.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_4100.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_4150.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_4200.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_4250.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_4300.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_4350.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_4400.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_4450.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_450.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_4500.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_4550.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_4600.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_4650.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_4700.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_4750.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_4800.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_4850.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_4900.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_4950.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_50.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_500.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_5000.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_5050.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_5100.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_5150.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_5200.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_5250.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_5300.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_5350.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_5400.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_5450.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_550.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_5500.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_600.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_650.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_700.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_750.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_800.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_850.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_900.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/model_950.pt
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_22-52-10/
+	scripts/rsl_rl/outputs/2026-06-17/16-36-14/
+	scripts/rsl_rl/outputs/2026-06-17/22-02-10/
+	scripts/rsl_rl/outputs/2026-06-17/22-06-42/
+	scripts/rsl_rl/outputs/2026-06-17/22-08-43/
+	scripts/rsl_rl/outputs/2026-06-17/22-08-55/
+	scripts/rsl_rl/outputs/2026-06-17/22-09-38/
+	scripts/rsl_rl/outputs/2026-06-17/22-10-06/
+	scripts/rsl_rl/outputs/2026-06-17/22-10-47/
+	scripts/rsl_rl/outputs/2026-06-17/22-11-24/
+	scripts/rsl_rl/outputs/2026-06-17/22-12-08/
+	scripts/rsl_rl/outputs/2026-06-17/22-18-12/
+	scripts/rsl_rl/outputs/2026-06-17/22-18-42/
+	scripts/rsl_rl/outputs/2026-06-17/22-19-48/
+	scripts/rsl_rl/outputs/2026-06-17/22-20-22/
+	scripts/rsl_rl/outputs/2026-06-17/22-21-14/
+	scripts/rsl_rl/outputs/2026-06-17/22-21-51/
+	scripts/rsl_rl/outputs/2026-06-17/22-22-25/
+	scripts/rsl_rl/outputs/2026-06-17/22-23-08/
+	scripts/rsl_rl/outputs/2026-06-17/22-24-03/
+	scripts/rsl_rl/outputs/2026-06-17/22-24-37/
+	scripts/rsl_rl/outputs/2026-06-17/22-27-36/
+	scripts/rsl_rl/outputs/2026-06-17/22-29-30/
+	scripts/rsl_rl/outputs/2026-06-17/22-30-59/
+	scripts/rsl_rl/outputs/2026-06-17/22-31-29/
+	scripts/rsl_rl/outputs/2026-06-17/22-31-51/
+	scripts/rsl_rl/outputs/2026-06-17/22-32-30/
+	scripts/rsl_rl/outputs/2026-06-17/22-33-29/
+	scripts/rsl_rl/outputs/2026-06-17/22-34-29/
+	scripts/rsl_rl/outputs/2026-06-17/22-35-28/
+	scripts/rsl_rl/outputs/2026-06-17/22-38-06/
+	scripts/rsl_rl/outputs/2026-06-17/22-39-29/
+	scripts/rsl_rl/outputs/2026-06-17/22-43-52/
+	scripts/rsl_rl/outputs/2026-06-17/22-44-18/
+	scripts/rsl_rl/outputs/2026-06-17/22-49-39/
+	scripts/rsl_rl/outputs/2026-06-17/22-50-58/
+	scripts/rsl_rl/outputs/2026-06-17/22-52-10/
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/events.out.tfevents.1781688310.chp-MS-7E80.5763.0 b/scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/events.out.tfevents.1781688310.chp-MS-7E80.5763.0
+index ef4f54c..0184f66 100644
+Binary files a/scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/events.out.tfevents.1781688310.chp-MS-7E80.5763.0 and b/scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-17_09-25-07/events.out.tfevents.1781688310.chp-MS-7E80.5763.0 differ
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env.cpython-311.pyc b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env.cpython-311.pyc
+index f2e43b5..0e3ddf6 100644
+Binary files a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env.cpython-311.pyc and b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env.cpython-311.pyc differ
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc
+index 86964d9..3778d2c 100644
+Binary files a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc and b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc differ
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/__pycache__/rsl_rl_ppo_cfg.cpython-311.pyc b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/__pycache__/rsl_rl_ppo_cfg.cpython-311.pyc
+index 6e046b4..002a7f1 100644
+Binary files a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/__pycache__/rsl_rl_ppo_cfg.cpython-311.pyc and b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/__pycache__/rsl_rl_ppo_cfg.cpython-311.pyc differ
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/rsl_rl_ppo_cfg.py b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/rsl_rl_ppo_cfg.py
+index 291e36d..59bb862 100644
+--- a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/rsl_rl_ppo_cfg.py
++++ b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/rsl_rl_ppo_cfg.py
+@@ -16,10 +16,11 @@ class PPORunnerCfg(RslRlOnPolicyRunnerCfg):
+     experiment_name = "phantomx_thesis_direct_ppo"
+     policy = RslRlPpoActorCriticCfg(
+         init_noise_std=1.0,
+-        actor_obs_normalization=False,
+-        critic_obs_normalization=False,
++        noise_std_type="log",       # exp(log_std) is always > 0 — prevents negative-std crash
++        actor_obs_normalization=True,
++        critic_obs_normalization=True,
+         # actor_hidden_dims=[32, 32],  ->Default
+-        # critic_hidden_dims=[32, 32],  ->Default, 
++        # critic_hidden_dims=[32, 32],  ->Default,
+         actor_hidden_dims=[128, 128],
+         critic_hidden_dims=[128, 128],
+         activation="elu",
+@@ -28,7 +29,7 @@ class PPORunnerCfg(RslRlOnPolicyRunnerCfg):
+         value_loss_coef=1.0,
+         use_clipped_value_loss=True,
+         clip_param=0.2,
+-        entropy_coef=0.005,
++        entropy_coef=0.001,
+         num_learning_epochs=5,
+         num_mini_batches=4,
+         learning_rate=1.0e-3,
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env.py b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env.py
+index 9406f0d..b9e30e8 100644
+--- a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env.py
++++ b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env.py
+@@ -20,20 +20,18 @@ class PhantomxThesisEnv(DirectRLEnv):
+ 
+         # Joint position command (deviation from default joint positions)
+         self._actions = torch.zeros(
+-            self.num_envs, 
+-            gym.spaces.flatdim(self.single_action_space), 
++            self.num_envs,
++            gym.spaces.flatdim(self.single_action_space),
+             device=self.device
+         )
+         self._previous_actions = torch.zeros(
+-            self.num_envs, 
+-            gym.spaces.flatdim(self.single_action_space), 
++            self.num_envs,
++            gym.spaces.flatdim(self.single_action_space),
+             device=self.device
+         )
+ 
+-        # X/Y linear velocity and yaw angular velocity commands which the Agend should learn to track
+-        # Next steps: implement terminal input for this commands
++        # X/Y linear velocity and yaw angular velocity commands
+         self._commands = torch.zeros(self.num_envs, 3, device=self.device)
+-        
+ 
+         # Get specific body indices for termination (all 6 tibias/feet)
+         self._die_body_ids, _ = self._contact_sensor.find_bodies([
+@@ -41,43 +39,12 @@ class PhantomxThesisEnv(DirectRLEnv):
+             "tibia_rf", "tibia_rm", "tibia_rr"   # Right feet
+         ])
+ 
++        # MP_BODY index for height measurement (physical body, 10cm above base_link)
++        self._mp_body_idx, _ = self._robot.find_bodies(["MP_BODY"])
++
+         self._has_stood_up = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
+         self._steps_since_reset = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
+ 
+-        # CPG — Tripod-Gang
+-        self._cpg_phase = torch.zeros(self.num_envs, device=self.device)
+-
+-        # Tripod A (LF, RM, LR): Phase-Offset = 0
+-        # Tripod B (RF, LM, RR): Phase-Offset = π
+-        _A_coxa,  _ = self._robot.find_joints(["j_c1_lf",    "j_c1_rm",    "j_c1_lr"])
+-        _B_coxa,  _ = self._robot.find_joints(["j_c1_rf",    "j_c1_lm",    "j_c1_rr"])
+-        _A_femur, _ = self._robot.find_joints(["j_thigh_lf", "j_thigh_rm", "j_thigh_lr"])
+-        _B_femur, _ = self._robot.find_joints(["j_thigh_rf", "j_thigh_lm", "j_thigh_rr"])
+-        _A_tibia, _ = self._robot.find_joints(["j_tibia_lf", "j_tibia_rm", "j_tibia_lr"])
+-        _B_tibia, _ = self._robot.find_joints(["j_tibia_rf", "j_tibia_lm", "j_tibia_rr"])
+-        n = self._robot.num_joints  # 18
+-
+-        # Phase-Offset (18,): 0 = Gruppe A, π = Gruppe B
+-        self._cpg_phase_offset = torch.zeros(n, device=self.device)
+-        self._cpg_phase_offset[list(_B_coxa) + list(_B_femur) + list(_B_tibia)] = math.pi
+-
+-        # Gelenk-Typ-Masken (18,)
+-        self._cpg_coxa_mask  = torch.zeros(n, device=self.device)
+-        self._cpg_femur_mask = torch.zeros(n, device=self.device)
+-        self._cpg_tibia_mask = torch.zeros(n, device=self.device)
+-        self._cpg_coxa_mask [list(_A_coxa)  + list(_B_coxa)]  = 1.0
+-        self._cpg_femur_mask[list(_A_femur) + list(_B_femur)] = 1.0
+-        self._cpg_tibia_mask[list(_A_tibia) + list(_B_tibia)] = 1.0
+-
+-        # Coxa-Vorzeichen: alle Coxa-Gelenke drehen um Körper-Z-Achse, aber
+-        # rechte Beine: positiv = vorwärts; linke Beine: positiv = rückwärts.
+-        # → linke Beine brauchen Vorzeichenumkehr im CPG.
+-        _left_coxa,  _ = self._robot.find_joints(["j_c1_lf", "j_c1_lm", "j_c1_lr"])
+-        _right_coxa, _ = self._robot.find_joints(["j_c1_rf", "j_c1_rm", "j_c1_rr"])
+-        self._cpg_coxa_sign = torch.zeros(n, device=self.device)
+-        self._cpg_coxa_sign[list(_right_coxa)] = +1.0
+-        self._cpg_coxa_sign[list(_left_coxa)]  = -1.0
+-
+         # Logging
+         self._episode_sums = {
+             key: torch.zeros(self.num_envs, dtype=torch.float, device=self.device)
+@@ -115,15 +82,14 @@ class PhantomxThesisEnv(DirectRLEnv):
+     # --------------------- ACTION ---------------------
+     def _pre_physics_step(self, actions: torch.Tensor):
+         # Motor-Strength-Curriculum (nur effort_limit, stiffness fest):
+-        # Ramp über 700k Steps (58% des Trainings) → danach 500k Steps mit realen Motoren.
++        # Ramp über 700k Steps → danach reale Motorwerte.
+         progress = min(1.0, self.common_step_counter / 700_000)
+         effort_limit = 3.82 + (1.912 - 3.82) * progress   # 3.82 → 1.912 Nm
+ 
+         actuator = self._robot.actuators["all_joints"]
+-        actuator.stiffness[:] = 8.0    # fest: realistisch für AX-12-Klasse
++        actuator.stiffness[:] = 8.0
+ 
+         # Grace-Period (0.5s nach Spawn): volles Drehmoment damit Roboter in Default-Pose steht.
+-        # Unabhängig von episode_length_buf (wird bei Bulk-Reset zufällig gesetzt).
+         grace_steps = int(0.5 / self.step_dt)
+         in_grace = self._steps_since_reset < grace_steps
+         self._steps_since_reset += 1
+@@ -132,25 +98,11 @@ class PhantomxThesisEnv(DirectRLEnv):
+         actuator.effort_limit[:] = effort_tensor
+ 
+         self._actions = actions.clone()
+-        self._actions[in_grace] = 0.0  # Observation konsistent: Policy hat "nichts" gemacht
+-
+-        # CPG Phase vorrücken
+-        self._cpg_phase.add_(2.0 * math.pi * self.cfg.cpg_freq * self.step_dt)
+-        self._cpg_phase.fmod_(2.0 * math.pi)
+-
+-        # q_cpg berechnen
+-        phase   = self._cpg_phase.unsqueeze(1) + self._cpg_phase_offset  # (N, 18)
+-        sin_phi = torch.sin(phase)
+-        swing   = torch.clamp(sin_phi, min=0.0)
+-        q_cpg   = (
+-              self._cpg_coxa_mask  * self.cfg.cpg_A_coxa * self._cpg_coxa_sign * sin_phi
+-            + self._cpg_femur_mask * self.cfg.cpg_A_femur                       * swing
+-            + self._cpg_tibia_mask * (-self.cfg.cpg_A_tibia)                    * swing
+-        )
++        self._actions[in_grace] = 0.0
+ 
+-        # q_target = q_default + q_gait + scale * Δq_policy
++        # q_target = q_default + scale * Δq_policy
+         q_def = self._robot.data.default_joint_pos
+-        self._processed_actions = q_def + q_cpg + self.cfg.action_scale * self._actions
++        self._processed_actions = q_def + self.cfg.action_scale * self._actions
+         self._processed_actions = torch.clamp(
+             self._processed_actions,
+             q_def - self.cfg.joint_pos_limit,
+@@ -173,24 +125,20 @@ class PhantomxThesisEnv(DirectRLEnv):
+ 
+         obs = torch.cat(
+             [
+-                lin_vel,                                                     # 3
+-                ang_vel,                                                     # 3
+-                gravity,                                                     # 3
+-                self._commands,                                              # 3  (kein Noise)
+-                jpos_rel,                                                    # 18
+-                jvel,                                                        # 18
+-                self._actions,                                               # 18 (kein Noise)
+-                torch.sin(self._cpg_phase).unsqueeze(1),                    # 1  (kein Noise)
+-                torch.cos(self._cpg_phase).unsqueeze(1),                    # 1
++                lin_vel,           # 3
++                ang_vel,           # 3
++                gravity,           # 3
++                self._commands,    # 3
++                jpos_rel,          # 18
++                jvel,              # 18
++                self._actions,     # 18
+             ],
+             dim=-1,
+-        )  # total: 68
++        )  # total: 66
+ 
+-        return {
+-            "policy": obs,
+-        }
++        return {"policy": obs}
+ 
+-   # --------------------- REWARDS ---------------------
++    # --------------------- REWARDS ---------------------
+     def _get_rewards(self) -> torch.Tensor:
+ 
+         # linear velocity tracking (exponential reward)
+@@ -215,7 +163,7 @@ class PhantomxThesisEnv(DirectRLEnv):
+         # Base height tracking reward
+         base_height = self._robot.data.root_pos_w[:, 2]
+         height_error = torch.square(base_height - self.cfg.target_base_height)
+-        height_reward = torch.exp(-height_error / 0.05)   # lockerer als vorher (0.02 → 0.05)
++        height_reward = torch.exp(-height_error / 0.05)
+ 
+         # Alive reward
+         alive_reward = torch.ones_like(lin_vel_error)
+@@ -237,40 +185,33 @@ class PhantomxThesisEnv(DirectRLEnv):
+ 
+         reward = torch.sum(torch.stack(list(rewards.values())), dim=0)
+ 
+-        # Logging
+         for key, value in rewards.items():
+             self._episode_sums[key] += value
+ 
+         return reward
++
+     # --------------------- TERMINATION ---------------------
+     def _get_dones(self):
+         time_out = self.episode_length_buf >= self.max_episode_length - 1
+ 
+-        base_height = self._robot.data.root_pos_w[:, 2]
++        # MP_BODY world height (physical body, not virtual base_link)
++        mp_body_height = self._robot.data.body_pos_w[:, self._mp_body_idx[0], 2]
+         gravity = self._robot.data.projected_gravity_b
+         tilt = torch.sum(torch.square(gravity[:, :2]), dim=1)
+ 
+-        # 1s Grace-Period: Roboter hat Zeit zum Stabilisieren nach dem Reset
+-        # grace_period = self.episode_length_buf > (0.5 / self.step_dt)  # 0.5s = 25 steps
+-
+-        foot_forces = self._contact_sensor.data.net_forces_w[:, self._die_body_ids, :]  # (envs, 6, 3)
+-        num_feet_in_contact = (torch.norm(foot_forces, dim=-1) > 1.0).float().sum(dim=-1)  # (envs,)
+-
+         died = (
+-            (base_height < self.cfg.termination_height) |
+-            (base_height > 0.35) |
++            (mp_body_height < self.cfg.termination_height) |
++            (mp_body_height > 0.45) |
+             (tilt > self.cfg.termination_tilt)
+         )
+ 
+         return died, time_out
+-        
+-    
+-        
++
+     # --------------------- RESET ---------------------
+     def _reset_idx(self, env_ids: torch.Tensor | None):
+         if env_ids is None or len(env_ids) == self.num_envs:
+             env_ids = self._robot._ALL_INDICES
+-            
++
+         self._robot.reset(env_ids)
+         super()._reset_idx(env_ids)
+ 
+@@ -279,30 +220,17 @@ class PhantomxThesisEnv(DirectRLEnv):
+             print(f"unique origins: {self._terrain.env_origins.unique(dim=0).shape[0]} / {self.num_envs}")
+ 
+         if len(env_ids) == self.num_envs and self.common_step_counter > 0:
+-            # Spread out resets during training to avoid synchronized resets.
+-            # Wird bei common_step_counter == 0 (Play-Start oder Training-Initialisierung)
+-            # übersprungen, damit der Roboter nicht sofort mit aktivem grace_period startet.
+             self.episode_length_buf[:] = torch.randint_like(
+                 self.episode_length_buf,
+                 high=int(self.max_episode_length)
+             )
+-            
++
+         self._actions[env_ids] = 0.0
+         self._previous_actions[env_ids] = 0.0
+         self._steps_since_reset[env_ids] = 0
+-        self._cpg_phase[env_ids] = torch.rand(len(env_ids), device=self.device) * 2 * math.pi
+-
+         self._has_stood_up[env_ids] = False
+ 
+-        # CURRICULUM LEARNING: basiert auf common_step_counter (echte Simulations-Steps),
+-        # nicht auf Reset-Zähler. Mit decimation=4, dt=1/200 → step_dt=0.02s.
+-        # 50 000 Steps ≈ 1000s Sim-Zeit; 150 000 Steps ≈ 3000s.
+-        # Velocity-Curriculum — kalibriert auf 1 200 000 Gesamt-Steps:
+-        #   Stage 1 (    0 – 100k): stehen lernen, kein Command           (  8%)
+-        #   Stage 2 (100k – 350k):  langsam vorwärts, 0–0.5 m/s          ( 21%)
+-        #   Stage 3 (350k –   1M):  voller Bereich, wächst auf ±1.0 m/s  ( 54%)
+-        #                           Ramp endet bei 350k + 700k = 1050k   → voll ab ~1.05M
+-        #   Danach (1.05M – 1.2M):  volles ±1.0 m/s, reale Motoren       ( 12%)
++        # Velocity curriculum
+         steps = self.common_step_counter
+         if steps < 100_000:
+             self._commands[env_ids] = 0.0
+@@ -315,57 +243,52 @@ class PhantomxThesisEnv(DirectRLEnv):
+             self._commands[env_ids] = torch.zeros_like(self._commands[env_ids]).uniform_(
+                 -max_vel, max_vel
+             )
+-        
++
+         # Reset robot state
+         joint_pos = self._robot.data.default_joint_pos[env_ids]
+-        joint_pos += torch.randn_like(joint_pos) * (math.pi / 18)  # ±10° wie PyBullet-Referenz
+-        
++        joint_pos += torch.randn_like(joint_pos) * (math.pi / 18)  # ±10°
++
+         joint_vel = self._robot.data.default_joint_vel[env_ids]
+         default_root_state = self._robot.data.default_root_state[env_ids].clone()
+         default_root_state[:, :3] += self._terrain.env_origins[env_ids]
+-
+-        # 🆕 Small initial height variation
+         default_root_state[:, 2] += torch.randn(len(env_ids), device=self.device) * 0.01
+-        
++
+         self._robot.write_root_pose_to_sim(default_root_state[:, :7], env_ids)
+         self._robot.write_root_velocity_to_sim(default_root_state[:, 7:], env_ids)
+         self._robot.write_joint_state_to_sim(joint_pos, joint_vel, None, env_ids)
+-        
++
+         # Logging episode statistics
+         extras = dict()
+         for key in self._episode_sums.keys():
+             episodic_sum_avg = torch.mean(self._episode_sums[key][env_ids])
+             extras["Episode_Reward/" + key] = episodic_sum_avg / self.max_episode_length_s
+             self._episode_sums[key][env_ids] = 0.0
+-            
++
+         self.extras["log"] = dict()
+         self.extras["log"].update(extras)
+-        
++
+         extras = dict()
+         extras["Episode_Termination/time_out"] = torch.count_nonzero(self.reset_time_outs[env_ids]).item()
+         self.extras["log"].update(extras)
+ 
+-        
+-
+     def get_IO_descriptors(self) -> dict:
+         return {
+             "observations": {
+                 "policy": [
+-                    {"name": "root_lin_vel_b",          "size": 3,  "description": "Root linear velocity in body frame (x, y, z)"},
+-                    {"name": "root_ang_vel_b",           "size": 3,  "description": "Root angular velocity in body frame (roll, pitch, yaw)"},
+-                    {"name": "projected_gravity_b",      "size": 3,  "description": "Projected gravity vector in body frame"},
+-                    {"name": "commands",                 "size": 3,  "description": "Velocity commands (vx, vy, yaw_rate)"},
+-                    {"name": "joint_pos_rel",            "size": 18, "description": "Joint positions relative to default pose"},
+-                    {"name": "joint_vel",                "size": 18, "description": "Joint velocities"},
+-                    {"name": "actions",                  "size": 18, "description": "Previous actions"},
+-                    {"name": "cpg_phase_sin_cos",         "size": 2,  "description": "sin/cos of CPG phase (encodes tripod gait cycle)"},
++                    {"name": "root_lin_vel_b",         "size": 3,  "description": "Root linear velocity in body frame (x, y, z)"},
++                    {"name": "root_ang_vel_b",          "size": 3,  "description": "Root angular velocity in body frame (roll, pitch, yaw)"},
++                    {"name": "projected_gravity_b",     "size": 3,  "description": "Projected gravity vector in body frame"},
++                    {"name": "commands",                "size": 3,  "description": "Velocity commands (vx, vy, yaw_rate)"},
++                    {"name": "joint_pos_rel",           "size": 18, "description": "Joint positions relative to default pose"},
++                    {"name": "joint_vel",               "size": 18, "description": "Joint velocities"},
++                    {"name": "actions",                 "size": 18, "description": "Previous actions"},
+                 ]
+             },
+             "actions": [
+                 {
+                     "name": "joint_position_targets",
+                     "size": 18,
+-                    "description": "Joint position targets (scaled deviation from default + default_joint_pos)",
++                    "description": "Joint position targets (scaled deviation from default_joint_pos)",
+                     "scale": self.cfg.action_scale,
+                 }
+             ],
+@@ -380,4 +303,4 @@ class PhantomxThesisEnv(DirectRLEnv):
+                 "terrain": str(type(self._terrain).__name__),
+                 "target_base_height": self.cfg.target_base_height,
+             },
+-        }
+\ No newline at end of file
++        }
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
+index 78eef50..7cfda0d 100644
+--- a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
++++ b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
+@@ -4,8 +4,6 @@
+ #
+ # SPDX-License-Identifier: BSD-3-Clause
+ 
+-import os
+-
+ import isaaclab.envs.mdp as mdp
+ import isaaclab.sim as sim_utils
+ from isaaclab.assets import ArticulationCfg
+@@ -123,16 +121,15 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
+     # =====================================================
+     episode_length_s = 40.0
+     decimation = 4
+-    action_scale = 0.3        # CPG liefert Grundgang, Policy korrigiert nur ±0.3 rad (≈ ±17°)
++    action_scale = 0.5        # Policy gibt direkte ±0.5 rad Abweichung von Default-Pose
+     joint_pos_limit: float = 0.5235  # ±30° um Default-Stellung (π/6) — verhindert mechanisch gefährliche Posen
+     action_space = 18  # PhantomX: 6 legs × 3 joints = 18 DOF
+ 
+     # Observation space:
+     #   root_lin_vel_b (3) + root_ang_vel_b (3) + projected_gravity_b (3)
+     #   + commands (3) + joint_pos_offset (18) + joint_vel (18) + actions (18)
+-    #   + cpg_phase sin/cos (2)
+-    #   Total = 68
+-    observation_space = 68
++    #   Total = 66
++    observation_space = 66
+     state_space = 0
+ 
+     obs_groups = {
+@@ -262,14 +259,6 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
+     # 🦿 FOOT CONTACT REWARD — Bonus für stabile Stützbasis (≥3 Beine am Boden)
+     foot_contact_reward_scale = 1.0
+ 
+-    # =====================================================
+-    # CPG — Central Pattern Generator (Tripod-Gang)
+-    # =====================================================
+-    cpg_freq: float = 1.5      # Hz  — Gangfrequenz
+-    cpg_A_coxa: float = 0.3   # rad — Coxa Vor/Rück-Schwung (≈ 17°)
+-    cpg_A_femur: float = 0.2  # rad — Femur Bein-Hub (≈ 11°)
+-    cpg_A_tibia: float = 0.1  # rad — Tibia Knie-Folge (≈ 6°)
+-
+     # # =====================================================
+     # # Optuna Hyperparameter Tuning - Werte werden per Environment Variable gesetzt bzw angepasst (10.06.2025)
+     # # =====================================================
+@@ -307,5 +296,5 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
+     # =====================================================
+     # TERMINATION THRESHOLDS - RELAXED FOR LEARNING
+     # =====================================================
+-    termination_height = 0.02
+-    termination_tilt = 0.5
+\ No newline at end of file
++    termination_height = 0.035   # base_link < 2cm → Hexapod kollabiert/umgekippt
++    termination_tilt = 0.85     # gx²+gy² > 0.85 → ~67° Neigung → hoffnungsloser Zustand
+\ No newline at end of file

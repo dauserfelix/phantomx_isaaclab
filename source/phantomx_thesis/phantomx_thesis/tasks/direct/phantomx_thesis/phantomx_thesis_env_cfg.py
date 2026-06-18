@@ -4,8 +4,6 @@
 #
 # SPDX-License-Identifier: BSD-3-Clause
 
-import os
-
 import isaaclab.envs.mdp as mdp
 import isaaclab.sim as sim_utils
 from isaaclab.assets import ArticulationCfg
@@ -123,16 +121,15 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
     # =====================================================
     episode_length_s = 40.0
     decimation = 4
-    action_scale = 0.3        # CPG liefert Grundgang, Policy korrigiert nur ±0.3 rad (≈ ±17°)
+    action_scale = 0.5        # Policy gibt direkte ±0.5 rad Abweichung von Default-Pose
     joint_pos_limit: float = 0.5235  # ±30° um Default-Stellung (π/6) — verhindert mechanisch gefährliche Posen
     action_space = 18  # PhantomX: 6 legs × 3 joints = 18 DOF
 
     # Observation space:
     #   root_lin_vel_b (3) + root_ang_vel_b (3) + projected_gravity_b (3)
     #   + commands (3) + joint_pos_offset (18) + joint_vel (18) + actions (18)
-    #   + cpg_phase sin/cos (2)
-    #   Total = 68
-    observation_space = 68
+    #   Total = 66
+    observation_space = 66
     state_space = 0
 
     obs_groups = {
@@ -233,7 +230,7 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
             )
         }
     )
-    target_base_height = 0.10    # 120 mm
+    target_base_height = 0.20    # MP_BODY at normal standing height (~20cm above ground)
     movement_speed_x = 0.05      # 10 cm/s
     yaw_rotation_speed_x = 0.0   # 0 rad/s
 
@@ -256,19 +253,11 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
 
     movement_penalty_scale = 10.0
 
-    # 🆕 SURVIVAL REWARD (critical!)
-    alive_reward_scale = 0.3
+    # 🆕 SURVIVAL REWARD — disabled: lazy robot exploit (lying still = free reward)
+    alive_reward_scale = 0.0
 
     # 🦿 FOOT CONTACT REWARD — Bonus für stabile Stützbasis (≥3 Beine am Boden)
     foot_contact_reward_scale = 1.0
-
-    # =====================================================
-    # CPG — Central Pattern Generator (Tripod-Gang)
-    # =====================================================
-    cpg_freq: float = 1.5      # Hz  — Gangfrequenz
-    cpg_A_coxa: float = 0.3   # rad — Coxa Vor/Rück-Schwung (≈ 17°)
-    cpg_A_femur: float = 0.2  # rad — Femur Bein-Hub (≈ 11°)
-    cpg_A_tibia: float = 0.1  # rad — Tibia Knie-Folge (≈ 6°)
 
     # # =====================================================
     # # Optuna Hyperparameter Tuning - Werte werden per Environment Variable gesetzt bzw angepasst (10.06.2025)
@@ -307,5 +296,5 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
     # =====================================================
     # TERMINATION THRESHOLDS - RELAXED FOR LEARNING
     # =====================================================
-    termination_height = 0.02
-    termination_tilt = 0.5
+    termination_height = 0.12    # MP_BODY < 12cm → Hexapod kollabiert (normal ~20cm)
+    termination_tilt = 0.60     # gx²+gy² > 0.60 → ~50° Neigung → hoffnungsloser Zustand
