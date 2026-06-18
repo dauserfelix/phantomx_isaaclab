@@ -10,17 +10,15 @@ from isaaclab_rl.rsl_rl import RslRlOnPolicyRunnerCfg, RslRlPpoActorCriticCfg, R
 
 @configclass
 class PPORunnerCfg(RslRlOnPolicyRunnerCfg):
-    num_steps_per_env = 96      #default:24
+    num_steps_per_env = 24
     max_iterations = 10000
     save_interval = 50
     experiment_name = "phantomx_thesis_direct_ppo"
     policy = RslRlPpoActorCriticCfg(
         init_noise_std=1.0,
-        noise_std_type="log",       # exp(log_std) is always > 0 — prevents negative-std crash
-        actor_obs_normalization=True,
-        critic_obs_normalization=True,
-        # actor_hidden_dims=[32, 32],  ->Default
-        # critic_hidden_dims=[32, 32],  ->Default,
+        noise_std_type="log",       # exp(log_std) always > 0 — verhindert Training-Crash
+        actor_obs_normalization=False,
+        critic_obs_normalization=False,
         actor_hidden_dims=[128, 128],
         critic_hidden_dims=[128, 128],
         activation="elu",
@@ -29,7 +27,7 @@ class PPORunnerCfg(RslRlOnPolicyRunnerCfg):
         value_loss_coef=1.0,
         use_clipped_value_loss=True,
         clip_param=0.2,
-        entropy_coef=0.001,
+        entropy_coef=0.005,
         num_learning_epochs=5,
         num_mini_batches=4,
         learning_rate=1.0e-3,

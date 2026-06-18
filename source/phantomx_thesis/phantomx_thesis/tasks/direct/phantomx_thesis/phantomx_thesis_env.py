@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import math
 import torch
 import gymnasium as gym
 
@@ -42,20 +41,30 @@ class PhantomxThesisEnv(DirectRLEnv):
         # MP_BODY index for height measurement (physical body, 10cm above base_link)
         self._mp_body_idx, _ = self._robot.find_bodies(["MP_BODY"])
 
+        # Tripod gait indices into the 6-element foot array (order: lf=0, lm=1, lr=2, rf=3, rm=4, rr=5)
+        self._TRIPOD_A = [0, 4, 2]  # lf, rm, lr
+        self._TRIPOD_B = [3, 1, 5]  # rf, lm, rr
+
         self._has_stood_up = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
-        self._steps_since_reset = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)
 
         # Logging
         self._episode_sums = {
             key: torch.zeros(self.num_envs, dtype=torch.float, device=self.device)
             for key in [
                 "track_lin_vel_xy_exp",
-                "height_tracking",
-                "flat_orientation_l2",
+                "track_ang_vel_z_exp",
+                "lin_vel_z_l2",
+                "ang_vel_xy_l2",
                 "dof_torques_l2",
+                "dof_acc_l2",
                 "action_rate_l2",
+                "flat_orientation_l2",
                 "alive",
+                "height_tracking",
+                "movement_penalty",
                 "foot_contact",
+                "tripod_gait",
+                "lazy_legs",
             ]
         }
 
@@ -81,33 +90,10 @@ class PhantomxThesisEnv(DirectRLEnv):
 
     # --------------------- ACTION ---------------------
     def _pre_physics_step(self, actions: torch.Tensor):
-        # Motor-Strength-Curriculum (nur effort_limit, stiffness fest):
-        # Ramp über 700k Steps → danach reale Motorwerte.
-        progress = min(1.0, self.common_step_counter / 700_000)
-        effort_limit = 3.82 + (1.912 - 3.82) * progress   # 3.82 → 1.912 Nm
-
-        actuator = self._robot.actuators["all_joints"]
-        actuator.stiffness[:] = 8.0
-
-        # Grace-Period (0.5s nach Spawn): volles Drehmoment damit Roboter in Default-Pose steht.
-        grace_steps = int(0.5 / self.step_dt)
-        in_grace = self._steps_since_reset < grace_steps
-        self._steps_since_reset += 1
-        effort_tensor = actuator.effort_limit.clone().fill_(effort_limit)
-        effort_tensor[in_grace] = 3.82
-        actuator.effort_limit[:] = effort_tensor
-
         self._actions = actions.clone()
-        self._actions[in_grace] = 0.0
 
-        # q_target = q_default + scale * Δq_policy
         q_def = self._robot.data.default_joint_pos
         self._processed_actions = q_def + self.cfg.action_scale * self._actions
-        self._processed_actions = torch.clamp(
-            self._processed_actions,
-            q_def - self.cfg.joint_pos_limit,
-            q_def + self.cfg.joint_pos_limit,
-        )
 
     def _apply_action(self):
         self._robot.set_joint_position_target(self._processed_actions)
@@ -141,26 +127,44 @@ class PhantomxThesisEnv(DirectRLEnv):
     # --------------------- REWARDS ---------------------
     def _get_rewards(self) -> torch.Tensor:
 
-        # linear velocity tracking (exponential reward)
+        # linear velocity tracking
         lin_vel_error = torch.sum(
             torch.square(self._commands[:, :2] - self._robot.data.root_lin_vel_b[:, :2]),
             dim=1
         )
         lin_vel_error_mapped = torch.exp(-lin_vel_error / 0.25)
 
-        # joint torques penalty (energy efficiency)
+        # yaw rate tracking
+        yaw_rate_error = torch.square(
+            self._commands[:, 2] - self._robot.data.root_ang_vel_b[:, 2]
+        )
+        yaw_rate_error_mapped = torch.exp(-yaw_rate_error / 0.25)
+
+        # z velocity penalty (body should not bounce)
+        z_vel_error = torch.square(self._robot.data.root_lin_vel_b[:, 2])
+
+        # angular velocity x/y penalty (no roll/pitch)
+        ang_vel_error = torch.sum(
+            torch.square(self._robot.data.root_ang_vel_b[:, :2]),
+            dim=1
+        )
+
+        # joint torques penalty
         joint_torques = torch.sum(torch.square(self._robot.data.applied_torque), dim=1)
 
-        # action rate penalty (smooth control)
+        # joint acceleration penalty
+        joint_accel = torch.sum(torch.square(self._robot.data.joint_acc), dim=1)
+
+        # action rate penalty
         action_rate = torch.sum(torch.square(self._actions - self._previous_actions), dim=1)
 
-        # flat orientation penalty (stay upright)
+        # flat orientation penalty
         flat_orientation = torch.sum(
             torch.square(self._robot.data.projected_gravity_b[:, :2]),
             dim=1
         )
 
-        # MP_BODY height tracking (consistent with termination; target ~0.20m when standing)
+        # MP_BODY height tracking (no step_dt — dominant reward, matches old working config)
         base_height = self._robot.data.body_pos_w[:, self._mp_body_idx[0], 2]
         height_error = torch.square(base_height - self.cfg.target_base_height)
         height_reward = torch.exp(-height_error / 0.02)
@@ -168,19 +172,41 @@ class PhantomxThesisEnv(DirectRLEnv):
         # Alive reward
         alive_reward = torch.ones_like(lin_vel_error)
 
+        # Movement penalty: penalizes not moving forward (unconditional — wie Working-Model 21.04.)
+        forward_speed = self._robot.data.root_lin_vel_b[:, 0]
+        is_moving_forward = forward_speed > self.cfg.movement_speed_x
+        movement_penalty = (~is_moving_forward).float()
+
         # Foot contact reward — bonus for stable tripod support base (≥3 feet on ground)
-        foot_forces = self._contact_sensor.data.net_forces_w[:, self._die_body_ids, :]  # (num_envs, 6, 3)
-        num_feet_in_contact = (torch.norm(foot_forces, dim=-1) > 1.0).float().sum(dim=-1)  # (num_envs,)
+        foot_forces = self._contact_sensor.data.net_forces_w[:, self._die_body_ids, :]
+        foot_contact_bool = torch.norm(foot_forces, dim=-1) > 1.0
+        num_feet_in_contact = foot_contact_bool.float().sum(dim=-1)
         foot_contact_reward = torch.clamp(num_feet_in_contact / 3.0, max=1.0)
 
+        # Tripod gait reward — belohnt alternierenden 3-3 Kontakt (lf+rm+lr vs rf+lm+rr)
+        tripod_a = foot_contact_bool[:, self._TRIPOD_A].float().sum(dim=-1)
+        tripod_b = foot_contact_bool[:, self._TRIPOD_B].float().sum(dim=-1)
+        tripod_score = torch.abs(tripod_a - tripod_b) / 3.0
+
+        # Lazy leg penalty — Beine die dauerhaft (>1s) in der Luft hängen
+        current_air_times = self._contact_sensor.data.current_air_time[:, self._die_body_ids]
+        lazy_legs = (current_air_times > 1.0).float().sum(dim=-1)
+
         rewards = {
-            "track_lin_vel_xy_exp": lin_vel_error_mapped * self.cfg.lin_vel_reward_scale * self.step_dt,
-            "height_tracking":      height_reward         * self.cfg.height_reward_scale * self.step_dt,
-            "flat_orientation_l2":  flat_orientation      * self.cfg.flat_orientation_reward_scale * self.step_dt,
-            "dof_torques_l2":       joint_torques         * self.cfg.joint_torque_reward_scale * self.step_dt,
-            "action_rate_l2":       action_rate           * self.cfg.action_rate_reward_scale * self.step_dt,
-            "alive":                alive_reward          * self.cfg.alive_reward_scale * self.step_dt,
-            "foot_contact":         foot_contact_reward   * self.cfg.foot_contact_reward_scale * self.step_dt,
+            "track_lin_vel_xy_exp": lin_vel_error_mapped  * self.cfg.lin_vel_reward_scale       * self.step_dt,
+            "track_ang_vel_z_exp":  yaw_rate_error_mapped * self.cfg.yaw_rate_reward_scale       * self.step_dt,
+            "lin_vel_z_l2":         z_vel_error            * self.cfg.z_vel_reward_scale          * self.step_dt,
+            "ang_vel_xy_l2":        ang_vel_error          * self.cfg.ang_vel_reward_scale        * self.step_dt,
+            "dof_torques_l2":       joint_torques          * self.cfg.joint_torque_reward_scale   * self.step_dt,
+            "dof_acc_l2":           joint_accel            * self.cfg.joint_accel_reward_scale    * self.step_dt,
+            "action_rate_l2":       action_rate            * self.cfg.action_rate_reward_scale    * self.step_dt,
+            "flat_orientation_l2":  flat_orientation       * self.cfg.flat_orientation_reward_scale * self.step_dt,
+            "alive":                alive_reward           * self.cfg.alive_reward_scale          * self.step_dt,
+            "height_tracking":      height_reward          * self.cfg.height_reward_scale,
+            "movement_penalty":     -movement_penalty      * self.cfg.movement_penalty_scale      * self.step_dt,
+            "foot_contact":         foot_contact_reward    * self.cfg.foot_contact_reward_scale   * self.step_dt,
+            "tripod_gait":          tripod_score           * self.cfg.tripod_gait_reward_scale    * self.step_dt,
+            "lazy_legs":           -lazy_legs              * self.cfg.lazy_leg_penalty_scale      * self.step_dt,
         }
 
         reward = torch.sum(torch.stack(list(rewards.values())), dim=0)
@@ -201,7 +227,7 @@ class PhantomxThesisEnv(DirectRLEnv):
 
         died = (
             (mp_body_height < self.cfg.termination_height) |
-            (mp_body_height > 0.45) |
+            (mp_body_height > 0.30) |
             (tilt > self.cfg.termination_tilt)
         )
 
@@ -227,7 +253,6 @@ class PhantomxThesisEnv(DirectRLEnv):
 
         self._actions[env_ids] = 0.0
         self._previous_actions[env_ids] = 0.0
-        self._steps_since_reset[env_ids] = 0
         self._has_stood_up[env_ids] = False
 
         # Velocity curriculum
@@ -246,7 +271,7 @@ class PhantomxThesisEnv(DirectRLEnv):
 
         # Reset robot state
         joint_pos = self._robot.data.default_joint_pos[env_ids]
-        joint_pos += torch.randn_like(joint_pos) * (math.pi / 18)  # ±10°
+        joint_pos += torch.randn_like(joint_pos) * 0.10  # ±~5.7° initial randomization
 
         joint_vel = self._robot.data.default_joint_vel[env_ids]
         default_root_state = self._robot.data.default_root_state[env_ids].clone()

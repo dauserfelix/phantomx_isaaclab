@@ -19,7 +19,6 @@ import isaaclab.terrains.height_field.hf_terrains_cfg as hf_gen
 from isaaclab.utils import configclass
 from isaaclab.sensors import ContactSensorCfg
 from isaaclab_assets.robots.phantomx import PHANTOMX_CFG  # isort: skip
-from isaaclab.actuators import IdealPDActuatorCfg
 
 # =====================================================
 # TERRAIN CONFIGURATION
@@ -213,25 +212,9 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
     # =====================================================
     # ROBOT Movement Params
     # =====================================================
-    robot: ArticulationCfg = PHANTOMX_CFG.replace(prim_path="/World/envs/env_.*/Robot").replace(
-        actuators={
-            "all_joints": IdealPDActuatorCfg(
-                joint_names_expr=[".*"],
-                # AX-12 bei 12V (linear extrapoliert aus 7V/10V-Datenpunkten):
-                #   Haltemoment: 19.5 kgf·cm = 1.912 Nm
-                #   Leerlaufgeschw.: 0.1473 s/60° = 7.11 rad/s (67.9 RPM)
-                # Zur Laufzeit überschreibt die Motor-Strength-Curriculum diese Werte:
-                #   stiffness: 25.0 → 10.0 Nm/rad
-                #   effort_limit: 3.82 → 1.91 Nm  (über 300k Steps)
-                effort_limit=1.912,     # Nm — AX-12 bei 12V (realistischer Endwert)
-                velocity_limit=7.11,    # rad/s — AX-12 bei 12V
-                stiffness=8.0,          # Nm/rad — fest; saturiert bei 1.912/8 = 0.24 rad Fehler
-                damping=0.5,            # Nm/(rad/s) — saturiert bei 1.912/0.5 = 3.82 rad/s
-            )
-        }
-    )
+    robot: ArticulationCfg = PHANTOMX_CFG.replace(prim_path="/World/envs/env_.*/Robot")
     target_base_height = 0.20    # MP_BODY at normal standing height (~20cm above ground)
-    movement_speed_x = 0.05      # 10 cm/s
+    movement_speed_x = 0.10      # 10 cm/s — Wert aus funktionierendem Modell (21.04.)
     yaw_rotation_speed_x = 0.0   # 0 rad/s
 
     # =====================================================
@@ -241,7 +224,7 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
     lin_vel_reward_scale = 10.0
     yaw_rate_reward_scale = 4.0
 
-    height_reward_scale = 5.0
+    height_reward_scale = 0.1    # kein step_dt in env → 0.1/step max (wie 21.04. Working-Model)
 
     # 🚫 PENALTIES (negative)
     z_vel_reward_scale = -2.0
@@ -253,11 +236,16 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
 
     movement_penalty_scale = 10.0
 
-    # 🆕 SURVIVAL REWARD — disabled: lazy robot exploit (lying still = free reward)
-    alive_reward_scale = 0.0
+    alive_reward_scale = 0.3
 
     # 🦿 FOOT CONTACT REWARD — Bonus für stabile Stützbasis (≥3 Beine am Boden)
     foot_contact_reward_scale = 1.0
+
+    # 🔄 TRIPOD GAIT REWARD — belohnt wechselndes 3-3 Kontaktmuster (alle Beine aktiv)
+    tripod_gait_reward_scale = 2.0
+
+    # 😴 LAZY LEG PENALTY — Strafe für Beine die >1s dauerhaft in der Luft hängen
+    lazy_leg_penalty_scale = 0.5
 
     # # =====================================================
     # # Optuna Hyperparameter Tuning - Werte werden per Environment Variable gesetzt bzw angepasst (10.06.2025)
@@ -296,5 +284,5 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
     # =====================================================
     # TERMINATION THRESHOLDS - RELAXED FOR LEARNING
     # =====================================================
-    termination_height = 0.12    # MP_BODY < 12cm → Hexapod kollabiert (normal ~20cm)
-    termination_tilt = 0.60     # gx²+gy² > 0.60 → ~50° Neigung → hoffnungsloser Zustand
+    termination_height = 0.1    # MP_BODY < 15cm → kollabiert (≙ base_link < 5cm + 10cm Offset)
+    termination_tilt = 0.06     # gx²+gy² > 0.10 → ~18° Neigung — exakter Wert aus funktionierendem Modell
