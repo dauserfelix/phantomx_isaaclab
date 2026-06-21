@@ -87,6 +87,30 @@ from isaaclab_assets.robots.phantomx import PHANTOMX_CFG  # isort: skip
 
 
 
+GRAVEL_TERRAIN_CFG = TerrainGeneratorCfg(
+    seed=42,
+    size=(8.0, 8.0),
+    border_width=0.5,
+    num_rows=16,
+    num_cols=32,
+    horizontal_scale=0.05,
+    vertical_scale=0.005,
+    slope_threshold=0.75,
+    difficulty_range=(0.0, 1.0),
+    use_cache=False,
+    curriculum=False,
+    sub_terrains={
+        "flat": mesh_gen.MeshPlaneTerrainCfg(proportion=0.2),
+        "gravel": hf_gen.HfRandomUniformTerrainCfg(
+            proportion=0.8,
+            noise_range=(0.01, 0.04),
+            noise_step=0.01,
+            border_width=0.25,
+        ),
+    },
+)
+
+
 @configclass
 class EventCfg:
     """Configuration for randomization."""
@@ -174,19 +198,18 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
     # )
 
     terrain = TerrainImporterCfg(
-    prim_path="/World/ground",
-    terrain_type="plane",
-    collision_group=-1,
-    physics_material=sim_utils.RigidBodyMaterialCfg(
-        friction_combine_mode="multiply",
-        restitution_combine_mode="multiply",
-        static_friction=1.0,
-        dynamic_friction=1.0,
-        restitution=0.0,
-    ),
-
-    debug_vis=False,
-)
+        prim_path="/World/ground",
+        terrain_type="plane",
+        collision_group=-1,
+        physics_material=sim_utils.RigidBodyMaterialCfg(
+            friction_combine_mode="multiply",
+            restitution_combine_mode="multiply",
+            static_friction=1.0,
+            dynamic_friction=1.0,
+            restitution=0.0,
+        ),
+        debug_vis=False,
+    )
 
     contact_sensor: ContactSensorCfg = ContactSensorCfg(
         prim_path="/World/envs/env_.*/Robot/.*",
@@ -200,7 +223,7 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
     # =====================================================
     scene: InteractiveSceneCfg = InteractiveSceneCfg(
         num_envs=512,
-        env_spacing=3.0,    # Erhöht von 2.5 auf 8.0 wegen Terrain-Größe (8x8m)
+        env_spacing=3.0,
         replicate_physics=True,
     )
 
@@ -285,4 +308,4 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
     # TERMINATION THRESHOLDS - RELAXED FOR LEARNING
     # =====================================================
     termination_height = 0.1    # MP_BODY < 15cm → kollabiert (≙ base_link < 5cm + 10cm Offset)
-    termination_tilt = 0.06     # gx²+gy² > 0.10 → ~18° Neigung — exakter Wert aus funktionierendem Modell
+    termination_tilt = 0.4     # gx²+gy² > 0.40 → ~39° Neigung — lockerer für Early Training

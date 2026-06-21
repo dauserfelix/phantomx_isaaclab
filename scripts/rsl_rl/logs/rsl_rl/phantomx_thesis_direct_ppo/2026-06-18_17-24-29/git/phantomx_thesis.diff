@@ -1,0 +1,104 @@
+--- git commit ---
+be861a3c88906658b8f6e99aecba48e54833aabc
+
+
+--- git status ---
+On branch master
+Your branch is ahead of 'origin/master' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-18_17-24-29/
+	scripts/rsl_rl/outputs/2026-06-18/17-24-29/
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc
+index 5eb9eee..26631b3 100644
+Binary files a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc and b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc differ
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
+index f649e94..8c11f15 100644
+--- a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
++++ b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
+@@ -87,6 +87,30 @@ from isaaclab_assets.robots.phantomx import PHANTOMX_CFG  # isort: skip
+ 
+ 
+ 
++GRAVEL_TERRAIN_CFG = TerrainGeneratorCfg(
++    seed=42,
++    size=(8.0, 8.0),
++    border_width=0.5,
++    num_rows=16,
++    num_cols=32,
++    horizontal_scale=0.05,
++    vertical_scale=0.005,
++    slope_threshold=0.75,
++    difficulty_range=(0.0, 1.0),
++    use_cache=False,
++    curriculum=False,
++    sub_terrains={
++        "flat": mesh_gen.MeshPlaneTerrainCfg(proportion=0.2),
++        "gravel": hf_gen.HfRandomUniformTerrainCfg(
++            proportion=0.8,
++            noise_range=(0.01, 0.04),
++            noise_step=0.01,
++            border_width=0.25,
++        ),
++    },
++)
++
++
+ @configclass
+ class EventCfg:
+     """Configuration for randomization."""
+@@ -174,19 +198,19 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
+     # )
+ 
+     terrain = TerrainImporterCfg(
+-    prim_path="/World/ground",
+-    terrain_type="plane",
+-    collision_group=-1,
+-    physics_material=sim_utils.RigidBodyMaterialCfg(
+-        friction_combine_mode="multiply",
+-        restitution_combine_mode="multiply",
+-        static_friction=1.0,
+-        dynamic_friction=1.0,
+-        restitution=0.0,
+-    ),
+-
+-    debug_vis=False,
+-)
++        prim_path="/World/ground",
++        terrain_type="generator",
++        terrain_generator=GRAVEL_TERRAIN_CFG,
++        collision_group=-1,
++        physics_material=sim_utils.RigidBodyMaterialCfg(
++            friction_combine_mode="multiply",
++            restitution_combine_mode="multiply",
++            static_friction=1.0,
++            dynamic_friction=1.0,
++            restitution=0.0,
++        ),
++        debug_vis=False,
++    )
+ 
+     contact_sensor: ContactSensorCfg = ContactSensorCfg(
+         prim_path="/World/envs/env_.*/Robot/.*",
+@@ -200,7 +224,7 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
+     # =====================================================
+     scene: InteractiveSceneCfg = InteractiveSceneCfg(
+         num_envs=512,
+-        env_spacing=3.0,    # Erhöht von 2.5 auf 8.0 wegen Terrain-Größe (8x8m)
++        env_spacing=8.0,    # muss Terrain-Tile-Größe (8x8m) entsprechen
+         replicate_physics=True,
+     )
+ 

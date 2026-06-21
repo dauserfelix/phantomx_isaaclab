@@ -61,7 +61,7 @@ models:
 
 memory:
   class: RandomMemory
-  memory_size: 25000    # Replay Buffer Größe (memory = memory_size × num_envs × obs × 4 bytes)
+  memory_size: 3000     # klein halten: 3000 × 64 envs × 152 Floats × 4B ≈ 117 MB
 
 agent:
   class: SAC
@@ -69,7 +69,7 @@ agent:
   batch_size: 4096
   discount_factor: 0.99
   polyak: 0.005
-  learning_rate: 3.0e-4
+  learning_rate: 1.0e-3
   learning_rate_scheduler: null
   learning_rate_scheduler_kwargs: {}
   observation_preprocessor: RunningStandardScaler
@@ -78,11 +78,12 @@ agent:
   state_preprocessor_kwargs: null
   random_timesteps: 10000
   learning_starts: 10000
-  grad_norm_clip: 0.0
+  grad_norm_clip: 1.0
   learn_entropy: True
   initial_entropy_value: 0.2
   target_entropy: null
-  mixed_precision: False
+  mixed_precision: True
+  rewards_shaper_scale: 1.0
   experiment:
     directory: "phantomx_sac"
     experiment_name: ""

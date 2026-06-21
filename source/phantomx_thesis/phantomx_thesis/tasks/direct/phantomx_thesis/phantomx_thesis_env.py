@@ -81,9 +81,7 @@ class PhantomxThesisEnv(DirectRLEnv):
         self._terrain = self.cfg.terrain.class_type(self.cfg.terrain)
 
         self.scene.clone_environments(copy_from_source=False)
-
-        if self.device == "cpu":
-            self.scene.filter_collisions(global_prim_paths=[self.cfg.terrain.prim_path])
+        self.scene.filter_collisions(global_prim_paths=[self.cfg.terrain.prim_path])
 
         light_cfg = sim_utils.DomeLightCfg(intensity=2000.0, color=(0.75, 0.75, 0.75))
         light_cfg.func("/World/Light", light_cfg)
@@ -164,8 +162,9 @@ class PhantomxThesisEnv(DirectRLEnv):
             dim=1
         )
 
-        # MP_BODY height tracking (no step_dt — dominant reward, matches old working config)
-        base_height = self._robot.data.body_pos_w[:, self._mp_body_idx[0], 2]
+        # MP_BODY height tracking — relative to local terrain surface
+        terrain_z = self._terrain.env_origins[:, 2]
+        base_height = self._robot.data.body_pos_w[:, self._mp_body_idx[0], 2] - terrain_z
         height_error = torch.square(base_height - self.cfg.target_base_height)
         height_reward = torch.exp(-height_error / 0.02)
 
@@ -220,8 +219,8 @@ class PhantomxThesisEnv(DirectRLEnv):
     def _get_dones(self):
         time_out = self.episode_length_buf >= self.max_episode_length - 1
 
-        # MP_BODY world height (physical body, not virtual base_link)
-        mp_body_height = self._robot.data.body_pos_w[:, self._mp_body_idx[0], 2]
+        # MP_BODY height relative to local terrain surface
+        mp_body_height = self._robot.data.body_pos_w[:, self._mp_body_idx[0], 2] - self._terrain.env_origins[:, 2]
         gravity = self._robot.data.projected_gravity_b
         tilt = torch.sum(torch.square(gravity[:, :2]), dim=1)
 

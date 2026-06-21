@@ -1,0 +1,179 @@
+--- git commit ---
+be861a3c88906658b8f6e99aecba48e54833aabc
+
+
+--- git status ---
+On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env.cpython-311.pyc
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/__pycache__/rsl_rl_ppo_cfg.cpython-311.pyc
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/rsl_rl_ppo_cfg.py
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env.py
+	modified:   source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-18_17-24-29/
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-18_21-22-29/
+	scripts/rsl_rl/logs/rsl_rl/phantomx_thesis_direct_ppo/2026-06-18_21-26-21/
+	scripts/rsl_rl/outputs/2026-06-18/17-24-29/
+	scripts/rsl_rl/outputs/2026-06-18/17-26-46/
+	scripts/rsl_rl/outputs/2026-06-18/21-01-41/
+	scripts/rsl_rl/outputs/2026-06-18/21-05-14/
+	scripts/rsl_rl/outputs/2026-06-18/21-07-10/
+	scripts/rsl_rl/outputs/2026-06-18/21-08-24/
+	scripts/rsl_rl/outputs/2026-06-18/21-14-34/
+	scripts/rsl_rl/outputs/2026-06-18/21-22-29/
+	scripts/rsl_rl/outputs/2026-06-18/21-26-21/
+
+no changes added to commit (use "git add" and/or "git commit -a") 
+
+
+--- git diff ---
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env.cpython-311.pyc b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env.cpython-311.pyc
+index ef5f6ad..c90393c 100644
+Binary files a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env.cpython-311.pyc and b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env.cpython-311.pyc differ
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc
+index 5eb9eee..36200f2 100644
+Binary files a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc and b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/__pycache__/phantomx_thesis_env_cfg.cpython-311.pyc differ
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/__pycache__/rsl_rl_ppo_cfg.cpython-311.pyc b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/__pycache__/rsl_rl_ppo_cfg.cpython-311.pyc
+index 68c0870..7298f20 100644
+Binary files a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/__pycache__/rsl_rl_ppo_cfg.cpython-311.pyc and b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/__pycache__/rsl_rl_ppo_cfg.cpython-311.pyc differ
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/rsl_rl_ppo_cfg.py b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/rsl_rl_ppo_cfg.py
+index 6de338e..ffa68f3 100644
+--- a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/rsl_rl_ppo_cfg.py
++++ b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/agents/rsl_rl_ppo_cfg.py
+@@ -11,7 +11,7 @@ from isaaclab_rl.rsl_rl import RslRlOnPolicyRunnerCfg, RslRlPpoActorCriticCfg, R
+ @configclass
+ class PPORunnerCfg(RslRlOnPolicyRunnerCfg):
+     num_steps_per_env = 24
+-    max_iterations = 10000
++    max_iterations = 30000
+     save_interval = 50
+     experiment_name = "phantomx_thesis_direct_ppo"
+     policy = RslRlPpoActorCriticCfg(
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env.py b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env.py
+index 51afb24..adac431 100644
+--- a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env.py
++++ b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env.py
+@@ -81,9 +81,7 @@ class PhantomxThesisEnv(DirectRLEnv):
+         self._terrain = self.cfg.terrain.class_type(self.cfg.terrain)
+ 
+         self.scene.clone_environments(copy_from_source=False)
+-
+-        if self.device == "cpu":
+-            self.scene.filter_collisions(global_prim_paths=[self.cfg.terrain.prim_path])
++        self.scene.filter_collisions(global_prim_paths=[self.cfg.terrain.prim_path])
+ 
+         light_cfg = sim_utils.DomeLightCfg(intensity=2000.0, color=(0.75, 0.75, 0.75))
+         light_cfg.func("/World/Light", light_cfg)
+@@ -164,8 +162,9 @@ class PhantomxThesisEnv(DirectRLEnv):
+             dim=1
+         )
+ 
+-        # MP_BODY height tracking (no step_dt — dominant reward, matches old working config)
+-        base_height = self._robot.data.body_pos_w[:, self._mp_body_idx[0], 2]
++        # MP_BODY height tracking — relative to local terrain surface
++        terrain_z = self._terrain.env_origins[:, 2]
++        base_height = self._robot.data.body_pos_w[:, self._mp_body_idx[0], 2] - terrain_z
+         height_error = torch.square(base_height - self.cfg.target_base_height)
+         height_reward = torch.exp(-height_error / 0.02)
+ 
+@@ -220,13 +219,13 @@ class PhantomxThesisEnv(DirectRLEnv):
+     def _get_dones(self):
+         time_out = self.episode_length_buf >= self.max_episode_length - 1
+ 
+-        # MP_BODY world height (physical body, not virtual base_link)
+-        mp_body_height = self._robot.data.body_pos_w[:, self._mp_body_idx[0], 2]
++        # MP_BODY height relative to local terrain surface
++        mp_body_height = self._robot.data.body_pos_w[:, self._mp_body_idx[0], 2] - self._terrain.env_origins[:, 2]
+         gravity = self._robot.data.projected_gravity_b
+         tilt = torch.sum(torch.square(gravity[:, :2]), dim=1)
+ 
+         died = (
+-            (mp_body_height < self.cfg.termination_height) |
++            # (mp_body_height < self.cfg.termination_height) |
+             (mp_body_height > 0.30) |
+             (tilt > self.cfg.termination_tilt)
+         )
+diff --git a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
+index f649e94..ce5cc11 100644
+--- a/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
++++ b/source/phantomx_thesis/phantomx_thesis/tasks/direct/phantomx_thesis/phantomx_thesis_env_cfg.py
+@@ -87,6 +87,30 @@ from isaaclab_assets.robots.phantomx import PHANTOMX_CFG  # isort: skip
+ 
+ 
+ 
++GRAVEL_TERRAIN_CFG = TerrainGeneratorCfg(
++    seed=42,
++    size=(8.0, 8.0),
++    border_width=0.5,
++    num_rows=16,
++    num_cols=32,
++    horizontal_scale=0.05,
++    vertical_scale=0.005,
++    slope_threshold=0.75,
++    difficulty_range=(0.0, 1.0),
++    use_cache=False,
++    curriculum=False,
++    sub_terrains={
++        "flat": mesh_gen.MeshPlaneTerrainCfg(proportion=0.2),
++        "gravel": hf_gen.HfRandomUniformTerrainCfg(
++            proportion=0.8,
++            noise_range=(0.01, 0.04),
++            noise_step=0.01,
++            border_width=0.25,
++        ),
++    },
++)
++
++
+ @configclass
+ class EventCfg:
+     """Configuration for randomization."""
+@@ -174,19 +198,18 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
+     # )
+ 
+     terrain = TerrainImporterCfg(
+-    prim_path="/World/ground",
+-    terrain_type="plane",
+-    collision_group=-1,
+-    physics_material=sim_utils.RigidBodyMaterialCfg(
+-        friction_combine_mode="multiply",
+-        restitution_combine_mode="multiply",
+-        static_friction=1.0,
+-        dynamic_friction=1.0,
+-        restitution=0.0,
+-    ),
+-
+-    debug_vis=False,
+-)
++        prim_path="/World/ground",
++        terrain_type="plane",
++        collision_group=-1,
++        physics_material=sim_utils.RigidBodyMaterialCfg(
++            friction_combine_mode="multiply",
++            restitution_combine_mode="multiply",
++            static_friction=1.0,
++            dynamic_friction=1.0,
++            restitution=0.0,
++        ),
++        debug_vis=False,
++    )
+ 
+     contact_sensor: ContactSensorCfg = ContactSensorCfg(
+         prim_path="/World/envs/env_.*/Robot/.*",
+@@ -200,7 +223,7 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
+     # =====================================================
+     scene: InteractiveSceneCfg = InteractiveSceneCfg(
+         num_envs=512,
+-        env_spacing=3.0,    # Erhöht von 2.5 auf 8.0 wegen Terrain-Größe (8x8m)
++        env_spacing=3.0,
+         replicate_physics=True,
+     )
+ 
