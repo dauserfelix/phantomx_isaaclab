@@ -222,7 +222,7 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
     # SCENE
     # =====================================================
     scene: InteractiveSceneCfg = InteractiveSceneCfg(
-        num_envs=512,
+        num_envs=64,    #PPO: 512
         env_spacing=3.0,
         replicate_physics=True,
     )
@@ -247,7 +247,7 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
     lin_vel_reward_scale = 10.0
     yaw_rate_reward_scale = 4.0
 
-    height_reward_scale = 0.1    # kein step_dt in env → 0.1/step max (wie 21.04. Working-Model)
+    height_reward_scale = 5.0    # mit step_dt: 5.0 × 0.02 = 0.1/step max (entspricht Working-Model)
 
     # 🚫 PENALTIES (negative)
     z_vel_reward_scale = -2.0
@@ -307,5 +307,5 @@ class PhantomxThesisEnvCfg(DirectRLEnvCfg):
     # =====================================================
     # TERMINATION THRESHOLDS - RELAXED FOR LEARNING
     # =====================================================
-    termination_height = 0.1    # MP_BODY < 15cm → kollabiert (≙ base_link < 5cm + 10cm Offset)
-    termination_tilt = 0.4     # gx²+gy² > 0.40 → ~39° Neigung — lockerer für Early Training
+    termination_height = 0.10    # MP_BODY < 10cm → kollabiert
+    termination_tilt = 0.40     # gx²+gy² > 0.40 → ~39° Neigung — locker für SAC Early Training

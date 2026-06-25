@@ -84,6 +84,9 @@ import gymnasium as gym
 import skrl
 from packaging import version
 
+import skrl
+print(skrl.__version__)
+
 # check for minimum supported skrl version
 SKRL_VERSION = "1.4.3"
 if version.parse(skrl.__version__) < version.parse(SKRL_VERSION):
@@ -220,6 +223,21 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
 
     # wrap around environment for skrl
     env = SkrlVecEnvWrapper(env, ml_framework=args_cli.ml_framework)  # same as: `wrap_env(env, wrapper="auto")`
+
+    print("=" * 80)
+    print("Action space:", env.action_space)
+
+    try:
+        print("low :", env.action_space.low)
+        print("high:", env.action_space.high)
+    except Exception as e:
+        print(e)
+
+    print("=" * 80)
+
+    print("=" * 80)
+    print(agent_cfg["models"]["policy"])
+    print("=" * 80)
 
     # configure and instantiate the skrl runner
     # https://skrl.readthedocs.io/en/latest/api/utils/runner.html

@@ -88,17 +88,21 @@ class PhantomxThesisEnv(DirectRLEnv):
 
     # --------------------- ACTION ---------------------
     def _pre_physics_step(self, actions: torch.Tensor):
-        self._actions = actions.clone()
+        self._previous_actions = self._actions.clone()
+        self._actions = torch.clamp(actions, -1.0, 1.0)
 
         q_def = self._robot.data.default_joint_pos
-        self._processed_actions = q_def + self.cfg.action_scale * self._actions
+        self._processed_actions = torch.clamp(
+            q_def + self.cfg.action_scale * self._actions,
+            q_def - self.cfg.joint_pos_limit,
+            q_def + self.cfg.joint_pos_limit,
+        )
 
     def _apply_action(self):
         self._robot.set_joint_position_target(self._processed_actions)
 
     # --------------------- OBSERVATIONS ---------------------
     def _get_observations(self) -> dict:
-        self._previous_actions = self._actions.clone()
 
         # Sensor-Messungen mit Rauschen (Sim-to-Real: modelliert Encoder/IMU-Noise)
         lin_vel  = self._robot.data.root_lin_vel_b  + torch.randn_like(self._robot.data.root_lin_vel_b)  * 0.01
@@ -171,10 +175,13 @@ class PhantomxThesisEnv(DirectRLEnv):
         # Alive reward
         alive_reward = torch.ones_like(lin_vel_error)
 
-        # Movement penalty: penalizes not moving forward (unconditional — wie Working-Model 21.04.)
+        # Movement penalty: only active when a forward command is given.
+        # Without this guard, the penalty cancels track_lin_vel_xy_exp exactly
+        # when commands=0 (both are 0.2/step), leaving zero net gradient signal.
         forward_speed = self._robot.data.root_lin_vel_b[:, 0]
+        has_forward_command = self._commands[:, 0].abs() > 0.05
         is_moving_forward = forward_speed > self.cfg.movement_speed_x
-        movement_penalty = (~is_moving_forward).float()
+        movement_penalty = (~is_moving_forward & has_forward_command).float()
 
         # Foot contact reward — bonus for stable tripod support base (≥3 feet on ground)
         foot_forces = self._contact_sensor.data.net_forces_w[:, self._die_body_ids, :]
@@ -201,7 +208,7 @@ class PhantomxThesisEnv(DirectRLEnv):
             "action_rate_l2":       action_rate            * self.cfg.action_rate_reward_scale    * self.step_dt,
             "flat_orientation_l2":  flat_orientation       * self.cfg.flat_orientation_reward_scale * self.step_dt,
             "alive":                alive_reward           * self.cfg.alive_reward_scale          * self.step_dt,
-            "height_tracking":      height_reward          * self.cfg.height_reward_scale,
+            "height_tracking":      height_reward          * self.cfg.height_reward_scale         * self.step_dt,
             "movement_penalty":     -movement_penalty      * self.cfg.movement_penalty_scale      * self.step_dt,
             "foot_contact":         foot_contact_reward    * self.cfg.foot_contact_reward_scale   * self.step_dt,
             "tripod_gait":          tripod_score           * self.cfg.tripod_gait_reward_scale    * self.step_dt,
@@ -209,6 +216,7 @@ class PhantomxThesisEnv(DirectRLEnv):
         }
 
         reward = torch.sum(torch.stack(list(rewards.values())), dim=0)
+        reward = torch.nan_to_num(reward, nan=0.0, posinf=0.0, neginf=0.0)
 
         for key, value in rewards.items():
             self._episode_sums[key] += value
@@ -255,7 +263,9 @@ class PhantomxThesisEnv(DirectRLEnv):
         self._has_stood_up[env_ids] = False
 
         # Velocity curriculum
-        steps = self.common_step_counter
+        # common_step_counter counts policy-steps; multiply by num_envs to get
+        # approximate total transitions (matches SKRL's timestep counter scale).
+        steps = self.common_step_counter * self.num_envs
         if steps < 100_000:
             self._commands[env_ids] = 0.0
         elif steps < 350_000:
